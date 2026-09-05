@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:background="#fdf6e3"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/btn_salir"
+        android:layout_width="68dp"
+        android:layout_height="44dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="#D7701D"
+        android:text="X"
+        android:textColor="#fdf6e3"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="PreAlertarte"
+        android:textColor="#0d0d0d"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sensor Activo Clima"
+        android:textColor="#555555"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toTopOf="@+id/btnmedio"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView3">
+
+        <androidx.gridlayout.widget.GridLayout
+            android:id="@+id/scroll_cont"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:columnCount="4"
+            app:alignmentMode="alignMargins"
+            app:columnOrderPreserved="false"
+            android:padding="8dp">
+
+            <!-- Fila 1, Col 1: Cámara -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_columnWeight="1"
+                app:layout_columnSpan="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="8dp">
+                <Button
+                    android:id="@+id/camara"
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:backgroundTint="#D7701D"
+                    android:textColor="#fdf6e3"
+                    android:text="" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="Cámara"
+                    android:textColor="#000000"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:gravity="center" />
+            </LinearLayout>
+
+            <!-- Fila 1, Col 2-3: Linterna (ToggleButton que ocupa 2 celdas sin backgroundTint) -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_columnWeight="2"
+                app:layout_columnSpan="2"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="8dp">
+
+                <ToggleButton
+                    android:id="@+id/toggleButton7"
+                    android:layout_width="match_parent"
+                    android:layout_height="72dp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="Linterna"
+                    android:textColor="#000000"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:gravity="center" />
+            </LinearLayout>
+
+            <!-- Fila 1, Col 4: Grabadora -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_columnWeight="1"
+                app:layout_columnSpan="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="8dp">
+                <Button
+                    android:id="@+id/button19"
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:backgroundTint="#D7701D"
+                    android:textColor="#fdf6e3"
+                    android:text="" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="Grabadora"
+                    android:textColor="#000000"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:gravity="center" />
+            </LinearLayout>
+
+            <!-- Fila 2, Col 1: Botón 20 -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_columnWeight="1"
+                app:layout_columnSpan="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="8dp">
+                <Button
+                    android:id="@+id/button20"
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:backgroundTint="#D7701D"
+                    android:textColor="#fdf6e3"
+                    android:text="" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="Opción 2"
+                    android:textColor="#000000"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:gravity="center" />
+            </LinearLayout>
+
+            <!-- Fila 2, Col 2: Botón 21 -->
+
+            <!-- Fila 2, Col 3: Botón 22 -->
+
+        </androidx.gridlayout.widget.GridLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <Button
+        android:id="@+id/button4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="#D7701D"
+        android:text="Button"
+        android:textColor="#fdf6e3"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btnmedio"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btnmedio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="#D7701D"
+        android:text="Button"
+        android:textColor="#fdf6e3"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/derecha"
+        app:layout_constraintStart_toEndOf="@+id/button4" />
+
+    <Button
+        android:id="@+id/derecha"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="#D7701D"
+        android:text="Button"
+        android:textColor="#fdf6e3"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btnmedio" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

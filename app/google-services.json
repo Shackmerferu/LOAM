@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "328863433212",
+    "project_id": "prealertateclima",
+    "storage_bucket": "prealertateclima.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:328863433212:android:a10abd71f2ddfa89863279",
+        "android_client_info": {
+          "package_name": "com.company.PreAlertateClima"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCAUHRa2vP9vJboIvQ1LfYPf8J5Ygoaqew"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:328863433212:android:6f8ab43edf3f7377863279",
+        "android_client_info": {
+          "package_name": "com.example.myapplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCAUHRa2vP9vJboIvQ1LfYPf8J5Ygoaqew"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
