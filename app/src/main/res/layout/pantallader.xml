@@ -6,7 +6,7 @@
     android:background="#fdf6e3"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".presentation.navegacion.MainActivity">
 
     <Button
         android:id="@+id/btn_salir"
@@ -102,7 +102,7 @@
                 android:padding="8dp">
 
                 <ToggleButton
-                    android:id="@+id/toggleButton7"
+                    android:id="@+id/btn_Linterna"
                     android:layout_width="match_parent"
                     android:layout_height="72dp" />
                 <TextView
@@ -178,7 +178,7 @@
     </androidx.core.widget.NestedScrollView>
 
     <Button
-        android:id="@+id/button4"
+        android:id="@+id/btn_izq"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
@@ -198,11 +198,11 @@
         android:text="Button"
         android:textColor="#fdf6e3"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/derecha"
-        app:layout_constraintStart_toEndOf="@+id/button4" />
+        app:layout_constraintEnd_toStartOf="@+id/btn_der"
+        app:layout_constraintStart_toEndOf="@+id/btn_izq" />
 
     <Button
-        android:id="@+id/derecha"
+        android:id="@+id/btn_der"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"

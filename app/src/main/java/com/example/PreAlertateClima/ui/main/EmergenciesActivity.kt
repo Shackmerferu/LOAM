@@ -1,27 +1,21 @@
-package com.example.PreAlertateClima
+package com.example.PreAlertateClima.ui.main
 
-import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.PreAlertateClima.R
 
-class PantalladerActivity : AppCompatActivity() {
+class EmergenciesActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.pantallader)
+        setContentView(R.layout.activity_emergencies)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
-        }
-        val btnMedio= findViewById<Button>(R.id.btnmedio)
-        btnMedio.setOnClickListener {
-            val intento = Intent(this, MainActivity::class.java)
-            startActivity(intento)
         }
     }
 }
