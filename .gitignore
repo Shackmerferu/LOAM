@@ -1,15 +1,49 @@
-*.iml
-.gradle
+# Built application files
+*.apk
+*.ap_
+*.aab
+
+# Files for the Dalvik VM
+*.dex
+
+# Java class files
+*.class
+
+# Generated files
+bin/
+gen/
+out/
+/build/
+/app/build/
+
+# Gradle files
+.gradle/
 /local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
+.hs_err*
+captures/
+.externalNativeBuild/
+.cxx/
+*.hprof
+.gradletasknamecache
+
+# IDE specific files (.idea)
+.idea/caches/
+.idea/libraries/
+.idea/modules.xml
+.idea/workspace.xml
+.idea/navEditor.xml
+.idea/assetWizardSettings.xml
+.idea/codeStyles/
+.idea/gradle.xml
+.idea/inspectionProfiles/
+.idea/scopes/
+.idea/deploymentTargetSelector.xml
+.idea/other.xml
+.idea/vcs.xml
+.idea/editor.xml
+*.iml
 .DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
-local.properties
+
+# Artifacts and AI assistant temporary folders
+.artifacts/
+scratch/
