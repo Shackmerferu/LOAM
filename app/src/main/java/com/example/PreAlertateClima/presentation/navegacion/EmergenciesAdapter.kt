@@ -8,13 +8,16 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.PreAlertateClima.R
 
+// Modelo de datos para las emergencias mostradas en lista
 data class Emergencia(val nombre: String, val numero: String)
 
+// Adaptador para mostrar la lista de contactos de emergencia
 class EmergenciesAdapter(
     private val emergenciasList: List<Emergencia>,
     private val onNumberClick: (String) -> Unit
 ) : RecyclerView.Adapter<EmergenciesAdapter.EmergenciaViewHolder>() {
 
+    // ViewHolder para cada elemento de emergencia
     class EmergenciaViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvNombre: TextView = itemView.findViewById(R.id.tvNombreInstitucion)
         val tvNumero: TextView = itemView.findViewById(R.id.tvNumero)

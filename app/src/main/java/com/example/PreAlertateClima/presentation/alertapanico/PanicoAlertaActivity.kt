@@ -31,7 +31,7 @@ class PanicoAlertaActivity : AppCompatActivity() {
     private val handler = Handler(Looper.getMainLooper())
     private var isRedState = true
     private var isRunning = true
-
+    //Luz intermitente , linterna y sonido que se actualiza cada 1 seg,
     private val flashingRunnable = object : Runnable {
         override fun run() {
             if (!isRunning) return
@@ -71,7 +71,7 @@ class PanicoAlertaActivity : AppCompatActivity() {
         } catch (e: Exception) {
             e.printStackTrace()
         }
-
+        //encender la vibracion del celular
         vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val vibratorManager = getSystemService(VIBRATOR_MANAGER_SERVICE) as VibratorManager
             vibratorManager.defaultVibrator
@@ -91,7 +91,7 @@ class PanicoAlertaActivity : AppCompatActivity() {
 
         handler.post(flashingRunnable)
     }
-
+    //Funcion para encender la linterna del celular
     private fun encenderLinterna(on: Boolean) {
         try {
             if (cameraId.isNotEmpty()) {
@@ -101,7 +101,7 @@ class PanicoAlertaActivity : AppCompatActivity() {
             e.printStackTrace()
         }
     }
-
+    //Funcion para encender la vibracion del celular
     private fun vibrar() {
         try {
             if (vibrator?.hasVibrator() == true) {
@@ -116,7 +116,7 @@ class PanicoAlertaActivity : AppCompatActivity() {
             e.printStackTrace()
         }
     }
-
+    //desactivando la alerta se debe apagar todo funcionamiento iniciado (linterna,sonido,vibración)
     private fun desactivarAlerta() {
         isRunning = false
         handler.removeCallbacks(flashingRunnable)
@@ -135,11 +135,10 @@ class PanicoAlertaActivity : AppCompatActivity() {
 
         DisasterActivity.isDisasterTriggeredGlobal = false
     }
-
+    //Funcion para detener todo y volver a la pestaña anterior
     private fun detenerTodoYSalir() {
         desactivarAlerta()
 
-        // Return to PantalladerActivity
         val intent = Intent(this, PantalladerActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
         startActivity(intent)

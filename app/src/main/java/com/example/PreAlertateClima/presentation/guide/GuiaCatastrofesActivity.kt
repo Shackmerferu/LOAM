@@ -15,6 +15,7 @@ import com.example.PreAlertateClima.presentation.location.MapActivity
 import com.example.PreAlertateClima.presentation.navegacion.PantalladerActivity
 import com.example.PreAlertateClima.utils.navegarHacia
 
+// Actividad para mostrar guías y videos instructivos sobre catástrofes
 class GuiaCatastrofesActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,6 +23,7 @@ class GuiaCatastrofesActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_guia_catastrofes)
 
+        // Configuración edge-to-edge de la vista
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -37,7 +39,7 @@ class GuiaCatastrofesActivity : AppCompatActivity() {
         configurarVideoLocal(vvTerremoto, R.raw.terremoto_video)
         configurarVideoLocal(vvTsunami, R.raw.tsunami_video)
 
-        // Footer y Salir
+        // Botones de navegación inferior
         val btnSalir: Button = findViewById(R.id.btn_salir)
         val btnIzq: Button = findViewById(R.id.btn_izq)
         val btnMedio: Button = findViewById(R.id.btn_medio)
@@ -49,6 +51,7 @@ class GuiaCatastrofesActivity : AppCompatActivity() {
         btnDer.setOnClickListener { navegarHacia(PantalladerActivity::class.java) }
     }
 
+    // Función para configurar y cargar un video local desde los recursos raw
     private fun configurarVideoLocal(videoView: VideoView, rawResId: Int) {
         try {
             val uri = Uri.parse("android.resource://$packageName/$rawResId")

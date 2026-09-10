@@ -29,6 +29,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+// Actividad para grabar notas de voz y audios de emergencia
 class VoiceActivity : DisasterActivity() {
 
     private lateinit var tvAudioStatus: TextView
@@ -43,6 +44,7 @@ class VoiceActivity : DisasterActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_voice)
 
+        // Configuración de insets de pantalla edge-to-edge
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -52,6 +54,7 @@ class VoiceActivity : DisasterActivity() {
         tvAudioStatus = findViewById(R.id.tvAudioStatus)
         btnRecordAudio = findViewById(R.id.btnRecordAudio)
 
+        // Botones de navegación inferior
         val btnSalir: Button = findViewById(R.id.btn_salir)
         val btnIzq: Button = findViewById(R.id.btn_izq)
         val btnMedio: Button = findViewById(R.id.btnmedio)
@@ -72,6 +75,7 @@ class VoiceActivity : DisasterActivity() {
             ActivityCompat.requestPermissions(this, permissions.toTypedArray(), REQUEST_AUDIO_PERMISSION)
         }
 
+        // Botón para iniciar o detener la grabación de audio
         btnRecordAudio.setOnClickListener {
             if (isRecording) {
                 stopRecording()
@@ -81,6 +85,7 @@ class VoiceActivity : DisasterActivity() {
         }
     }
 
+    // Función para iniciar la grabación de audio desde el micrófono
     private fun startRecording() {
         val permissions = mutableListOf(Manifest.permission.RECORD_AUDIO)
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
@@ -122,6 +127,7 @@ class VoiceActivity : DisasterActivity() {
         }
     }
 
+    // Función para detener la grabación y guardar el archivo de audio
     private fun stopRecording() {
         try {
             try {
@@ -151,6 +157,7 @@ class VoiceActivity : DisasterActivity() {
         }
     }
 
+    // Función para guardar la grabación de audio en el almacenamiento público MediaStore
     private fun guardarEnMediaStorePublica(file: File) {
         try {
             val values = ContentValues().apply {

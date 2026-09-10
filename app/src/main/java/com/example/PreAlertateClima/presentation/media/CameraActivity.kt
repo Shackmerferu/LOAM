@@ -37,6 +37,7 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
 
+// Actividad para capturar fotos y grabar videos utilizando CameraX
 class CameraActivity : DisasterActivity() {
 
     private lateinit var viewFinder: PreviewView
@@ -67,6 +68,7 @@ class CameraActivity : DisasterActivity() {
         btnTakePhoto = findViewById(R.id.image_capture_button)
         btnToggleRecord = findViewById(R.id.btnToggleRecord)
 
+        // Botones de navegación inferior
         val btnSalir: Button = findViewById(R.id.btn_salir)
         val btnIzq: Button = findViewById(R.id.btn_izq)
         val btnMedio: Button = findViewById(R.id.btnmedio)
@@ -83,6 +85,7 @@ class CameraActivity : DisasterActivity() {
             ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
         }
 
+        // Botón para cambiar entre cámara frontal y trasera
         btnSwitchCamera.setOnClickListener {
             cameraSelector = if (cameraSelector == CameraSelector.DEFAULT_FRONT_CAMERA) {
                 CameraSelector.DEFAULT_BACK_CAMERA
@@ -92,15 +95,18 @@ class CameraActivity : DisasterActivity() {
             startCamera()
         }
 
+        // Botón para tomar fotografía
         btnTakePhoto.setOnClickListener {
             takePhoto()
         }
 
+        // Botón para iniciar o detener la grabación de video
         btnToggleRecord.setOnClickListener {
             toggleVideoRecord()
         }
     }
 
+    // Función para inicializar y arrancar la cámara con CameraX
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
 
@@ -142,6 +148,7 @@ class CameraActivity : DisasterActivity() {
         }, ContextCompat.getMainExecutor(this))
     }
 
+    // Función para generar un archivo de salida multimedia en el almacenamiento público
     private fun getOutputFile(dirType: String, prefix: String, extension: String): File {
         val publicDir = Environment.getExternalStoragePublicDirectory(dirType)
         val appDir = File(publicDir, "PreAlertate")
@@ -155,6 +162,7 @@ class CameraActivity : DisasterActivity() {
         return if (appDir.exists() && appDir.canWrite()) file else File(getExternalFilesDir(dirType) ?: filesDir, "${prefix}_$name.$extension")
     }
 
+    // Función para escanear el archivo multimedia recién creado para que aparezca en la galería
     private fun scanMediaFile(file: File, mimeType: String) {
         MediaScannerConnection.scanFile(
             applicationContext,
@@ -165,6 +173,7 @@ class CameraActivity : DisasterActivity() {
         }
     }
 
+    // Función para tomar una foto y guardarla
     private fun takePhoto() {
         val imageCapture = imageCapture ?: return
 
@@ -189,6 +198,7 @@ class CameraActivity : DisasterActivity() {
         )
     }
 
+    // Función para tomar foto por comando de voz y retornar a la pantalla principal
     private fun takePhotoAndReturn() {
         val imageCapture = imageCapture ?: return
 
@@ -217,6 +227,7 @@ class CameraActivity : DisasterActivity() {
         )
     }
 
+    // Función para alternar entre iniciar y detener la grabación de video
     private fun toggleVideoRecord() {
         val videoCapture = this.videoCapture ?: return
 

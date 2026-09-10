@@ -7,15 +7,18 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.PreAlertateClima.R
 
+// Modelo de datos para representar el estado y porcentaje de la batería
 data class BatteryModel(
-    val percentageText: String,
-    val timeEstimateText: String
+    val percentageText: String,     // Texto con el porcentaje de batería
+    val timeEstimateText: String    // Texto con el tiempo estimado restante
 )
 
+// Adaptador para mostrar la información de la batería en el RecyclerView
 class BatteryAdapter(
     private val batteryList: List<BatteryModel>
 ) : RecyclerView.Adapter<BatteryAdapter.BatteryViewHolder>() {
 
+    // ViewHolder que contiene las vistas de la tarjeta de batería
     class BatteryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvBatteryPercentage: TextView = itemView.findViewById(R.id.tvBatteryPercentage)
         val tvBatteryTime: TextView = itemView.findViewById(R.id.tvBatteryTime)

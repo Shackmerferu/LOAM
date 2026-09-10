@@ -21,6 +21,7 @@ import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 
+// Actividad para gestionar el chat de asistencia en tiempo real con operadores
 class ChatAsistenciaActivity : AppCompatActivity() {
 
     private lateinit var rvChat: RecyclerView
@@ -34,6 +35,7 @@ class ChatAsistenciaActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_chat_asistencia)
 
+        // Configuración de insets de ventana para diseño edge-to-edge
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -42,12 +44,12 @@ class ChatAsistenciaActivity : AppCompatActivity() {
 
         db = FirebaseFirestore.getInstance()
 
-        // Vistas
+        // Inicialización de Vistas
         rvChat = findViewById(R.id.rvChat)
         etMensaje = findViewById(R.id.etMensaje)
         btnEnviar = findViewById(R.id.btnEnviar)
 
-        // Adapter y LayoutManager
+        // Configuración del adaptador y layout manager del RecyclerView del chat
         val layoutManager = LinearLayoutManager(this)
         layoutManager.stackFromEnd = true
         rvChat.layoutManager = layoutManager
@@ -57,12 +59,12 @@ class ChatAsistenciaActivity : AppCompatActivity() {
         // Escuchar mensajes en tiempo real desde Firestore
         escucharMensajes()
 
-        // Botón Enviar
+        // Evento del Botón Enviar mensaje
         btnEnviar.setOnClickListener {
             enviarMensaje()
         }
 
-        // Navegación
+        // Configuración de botones de navegación inferior
         val btnSalir: Button = findViewById(R.id.btn_salir)
         val btnIzq: Button = findViewById(R.id.btn_izq)
         val btnMedio: Button = findViewById(R.id.btn_medio)
@@ -74,6 +76,7 @@ class ChatAsistenciaActivity : AppCompatActivity() {
         btnDer.setOnClickListener { navegarHacia(PantalladerActivity::class.java) }
     }
 
+    // Función para escuchar cambios y mensajes nuevos en Firestore en tiempo real
     private fun escucharMensajes() {
         try {
             db.collection("chat_asistencia")
@@ -104,6 +107,7 @@ class ChatAsistenciaActivity : AppCompatActivity() {
         }
     }
 
+    // Función para enviar un nuevo mensaje redactado por el usuario a Firestore
     private fun enviarMensaje() {
         val texto = etMensaje.text.toString().trim()
         if (texto.isEmpty()) {

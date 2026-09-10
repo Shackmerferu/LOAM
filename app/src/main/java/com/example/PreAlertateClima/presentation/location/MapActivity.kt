@@ -23,6 +23,7 @@ import com.google.android.gms.location.LocationServices
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.Locale
 
+// Actividad para mostrar la ubicación actual en el mapa y guardar coordenadas en Firestore
 class MapActivity : DisasterActivity() {
 
     private lateinit var tvDireccionGrande: TextView
@@ -56,6 +57,7 @@ class MapActivity : DisasterActivity() {
             guardarEnFirestore()
         }
 
+        // Botones de navegación inferior
         val btnSalir: Button = findViewById(R.id.btn_salir)
         val btnIzq: Button = findViewById(R.id.btn_izq)
         val btnMedio: Button = findViewById(R.id.btnmedio)
@@ -78,6 +80,7 @@ class MapActivity : DisasterActivity() {
         }
     }
 
+    // Función para verificar si el GPS está activado en el dispositivo
     private fun verificarEstadoGPS() {
         val locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
@@ -89,6 +92,7 @@ class MapActivity : DisasterActivity() {
         }
     }
 
+    // Función para obtener las coordenadas geográficas reales mediante FusedLocationProvider
     @SuppressLint("MissingPermission")
     private fun obtenerCoordenadasReales() {
         val fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
@@ -126,11 +130,13 @@ class MapActivity : DisasterActivity() {
         }
     }
 
+    // Función para cargar el mapa de OpenStreetMap en el WebView usando coordenadas
     private fun cargarMapaOSM(lat: Double, lon: Double) {
         val urlOSM = "https://www.openstreetmap.org/#map=16/$lat/$lon"
         mapaWebView.loadUrl(urlOSM)
     }
 
+    // Función para traducir latitud y longitud a una dirección postal legible usando Geocoder
     private fun traducirCoordenadasADireccion(lat: Double, lon: Double) {
         try {
             val geocoder = Geocoder(this, Locale.getDefault())
@@ -144,6 +150,7 @@ class MapActivity : DisasterActivity() {
         }
     }
 
+    // Función para guardar la ubicación actual del siniestro en Firebase Firestore
     private fun guardarEnFirestore() {
         val db = FirebaseFirestore.getInstance()
         val direccionTexto = tvDireccionGrande.text.toString()

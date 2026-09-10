@@ -29,10 +29,12 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+// Actividad del panel derecho con accesos directos a herramientas, batería y comandos de voz
 class PantalladerActivity : DisasterActivity() {
 
     private lateinit var rvBateria: RecyclerView
 
+    // Lanzador para el reconocimiento de voz por comandos
     private val speechLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK && result.data != null) {
             val matches = result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
@@ -52,6 +54,7 @@ class PantalladerActivity : DisasterActivity() {
             insets
         }
 
+        // Botones de navegación inferior
         val btnSalir: Button = findViewById(R.id.btn_salir)
         val btnIzq: Button = findViewById(R.id.btn_izq)
         val btnMedio: Button = findViewById(R.id.btnmedio)
@@ -64,7 +67,7 @@ class PantalladerActivity : DisasterActivity() {
             Toast.makeText(this, "Ya te encuentras en esta sección", Toast.LENGTH_SHORT).show()
         }
 
-        // Batería como RecyclerView en la parte superior (Height ~100dp, Width match_parent)
+        // Batería como RecyclerView en la parte superior
         rvBateria = findViewById(R.id.rvBateria)
         rvBateria.layoutManager = LinearLayoutManager(this)
         cargarRecyclerViewBateria()
@@ -82,7 +85,6 @@ class PantalladerActivity : DisasterActivity() {
         }
 
         btnGrabadora.setOnClickListener {
-            // Pantalla propia para Grabadora de Voz
             navegarHacia(VoiceActivity::class.java)
         }
 
@@ -95,7 +97,6 @@ class PantalladerActivity : DisasterActivity() {
         }
 
         btnVoz.setOnClickListener {
-            // Toast de aviso y activación directa del reconocimiento de voz de Google
             iniciarComandoVozDirecto()
         }
 
@@ -104,6 +105,7 @@ class PantalladerActivity : DisasterActivity() {
         }
     }
 
+    // Función para calcular y cargar el estado de la batería y tiempo restante en el RecyclerView
     private fun cargarRecyclerViewBateria() {
         val batteryStatus: Intent? = registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
         val level: Int = batteryStatus?.getIntExtra(BatteryManager.EXTRA_LEVEL, -1) ?: -1
@@ -126,6 +128,7 @@ class PantalladerActivity : DisasterActivity() {
         rvBateria.adapter = BatteryAdapter(listOf(batteryItem))
     }
 
+    // Función para iniciar el reconocimiento de voz por Google Assistant / Intent
     private fun iniciarComandoVozDirecto() {
         Toast.makeText(this, "Reconocimiento de voz de Google activo, podés hablar...", Toast.LENGTH_LONG).show()
 
@@ -142,6 +145,7 @@ class PantalladerActivity : DisasterActivity() {
         }
     }
 
+    // Función para procesar el comando de voz reconocido y ejecutar acciones
     private fun procesarComandoVozDirecto(comando: String) {
         when {
             comando.contains("camara") || comando.contains("cámara") || comando.contains("abrir camara") -> {

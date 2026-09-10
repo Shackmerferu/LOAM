@@ -15,20 +15,21 @@ private val TAB_TITLES = arrayOf(
  * A [FragmentStateAdapter] that returns a fragment corresponding to
  * one of the sections/tabs/pages.
  */
+// Adaptador para gestionar las pestañas de navegación por secciones
 class SectionsPagerAdapter(private val context: Context, fa: FragmentActivity)
     : FragmentStateAdapter(fa) {
 
+    // Crear y retornar el fragmento correspondiente a la posición de la pestaña
     override fun createFragment(position: Int): Fragment {
-        // createFragment is called to instantiate the fragment for the given page.
-        // Return a PlaceholderFragment.
         return PlaceholderFragment.newInstance(position + 1)
     }
 
+    // Retornar el número total de pestañas (páginas)
     override fun getItemCount(): Int {
-        // Show 2 total pages.
         return 2
     }
 
+    // Obtener el título correspondiente a cada pestaña
     fun getPageTitle(position: Int): CharSequence? {
         return context.resources.getString(TAB_TITLES[position])
     }

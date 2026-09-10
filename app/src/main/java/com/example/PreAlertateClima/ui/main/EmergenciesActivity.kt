@@ -7,6 +7,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.example.PreAlertateClima.R
 import com.example.PreAlertateClima.presentation.base.DisasterActivity
 
+// Actividad para mostrar listado de emergencias (UI principal auxiliar)
 class EmergenciesActivity : DisasterActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

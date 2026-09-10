@@ -24,6 +24,7 @@ import com.example.PreAlertateClima.presentation.navegacion.PantalladerActivity
 import com.example.PreAlertateClima.utils.navegarHacia
 import com.google.firebase.firestore.FirebaseFirestore
 
+// Actividad principal de inicio que muestra clima, linterna y números de emergencia
 class MainActivity : DisasterActivity() {
 
     private lateinit var rvEmergencias: RecyclerView
@@ -40,12 +41,14 @@ class MainActivity : DisasterActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.pantalla_inicio)
 
+        // Ajuste edge-to-edge
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
+        // Botones de navegación inferior
         val btnSalir: Button = findViewById(R.id.btn_salir)
         val btnIzq: Button = findViewById(R.id.btn_izq)
         val btnMedio: Button = findViewById(R.id.btnmedio)
@@ -80,6 +83,7 @@ class MainActivity : DisasterActivity() {
             toggleLinternaHeader()
         }
 
+        // Configuración del WebView para mostrar el widget meteorológico
         val webView = findViewById<WebView>(R.id.weatherWebView)
         webView.settings.javaScriptEnabled = true
 
@@ -115,11 +119,12 @@ class MainActivity : DisasterActivity() {
         }
         rvEmergencias.adapter = adapter
 
-        // Inicializamos Cloud Firestore
+        // Inicializamos Cloud Firestore para los números de emergencia
         db = FirebaseFirestore.getInstance()
         cargarNumerosEmergenciaFirestore()
     }
 
+    // Función para alternar el estado de la linterna desde el encabezado
     private fun toggleLinternaHeader() {
         try {
             if (isFlashOn) {
@@ -134,6 +139,7 @@ class MainActivity : DisasterActivity() {
         }
     }
 
+    // Función para apagar la linterna del encabezado y cambiar color de botón a rojo
     private fun apagarLinternaHeader() {
         try {
             if (isFlashOn) {
@@ -146,6 +152,7 @@ class MainActivity : DisasterActivity() {
         }
     }
 
+    // Función para cargar los números de emergencia desde Firebase Firestore o valores por defecto
     private fun cargarNumerosEmergenciaFirestore() {
         val defaultEmergencias = listOf(
             Emergencia("Policía de Emergencias", "101"),
@@ -193,6 +200,7 @@ class MainActivity : DisasterActivity() {
             }
     }
 
+    // Función para realizar llamada telefónica de emergencia
     private fun llamarEmergencia(numero: String) {
         val intentLlamada = Intent(Intent.ACTION_DIAL)
         intentLlamada.data = Uri.parse("tel:$numero")

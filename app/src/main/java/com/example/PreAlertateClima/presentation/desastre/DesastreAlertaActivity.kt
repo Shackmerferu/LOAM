@@ -34,6 +34,7 @@ class DesastreAlertaActivity : AppCompatActivity() {
     private var isRedState = true
     private var isRunning = true
 
+    // Luz intermitente, linterna y parpadeo de pantalla que se actualiza cada 1 segundo
     private val flashingRunnable = object : Runnable {
         override fun run() {
             if (!isRunning) return
@@ -79,6 +80,7 @@ class DesastreAlertaActivity : AppCompatActivity() {
             e.printStackTrace()
         }
 
+        // Encender la vibración del celular según versión de Android
         vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val vibratorManager = getSystemService(VIBRATOR_MANAGER_SERVICE) as VibratorManager
             vibratorManager.defaultVibrator
@@ -99,6 +101,7 @@ class DesastreAlertaActivity : AppCompatActivity() {
         handler.post(flashingRunnable)
     }
 
+    // Función para encender la linterna del celular
     private fun encenderLinterna(on: Boolean) {
         try {
             if (cameraId.isNotEmpty()) {
@@ -109,6 +112,7 @@ class DesastreAlertaActivity : AppCompatActivity() {
         }
     }
 
+    // Función para hacer vibrar el dispositivo durante la alerta
     private fun vibrar() {
         try {
             if (vibrator?.hasVibrator() == true) {
@@ -124,6 +128,7 @@ class DesastreAlertaActivity : AppCompatActivity() {
         }
     }
 
+    // Función para desactivar la alarma, linterna, vibración y reestablecer estados
     private fun desactivarAlerta() {
         isRunning = false
         handler.removeCallbacks(flashingRunnable)
@@ -140,10 +145,11 @@ class DesastreAlertaActivity : AppCompatActivity() {
         }
         try { vibrator?.cancel() } catch (e: Exception) { e.printStackTrace() }
 
-        // Reset global disaster trigger for future database updates
+        // Restablecer bandera global de desastre para futuras actualizaciones de la base de datos
         DisasterActivity.isDisasterTriggeredGlobal = false
     }
 
+    // Ir a la guía de catástrofes y desactivar la alerta actual
     private fun irAGuiaCatastrofesYDesactivar() {
         desactivarAlerta()
 
@@ -152,10 +158,10 @@ class DesastreAlertaActivity : AppCompatActivity() {
         finish()
     }
 
+    // Detener todos los avisos y salir hacia la pantalla de navegación principal
     private fun detenerTodoYSalir() {
         desactivarAlerta()
 
-        // Return to PantalladerActivity
         val intent = Intent(this, PantalladerActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
         startActivity(intent)
