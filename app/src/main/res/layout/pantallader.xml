@@ -6,8 +6,9 @@
     android:background="#fdf6e3"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.navegacion.MainActivity">
+    tools:context=".presentation.navegacion.PantalladerActivity">
 
+    <!-- HEADER -->
     <Button
         android:id="@+id/btn_salir"
         android:layout_width="68dp"
@@ -37,7 +38,7 @@
         android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Sensor Activo Clima"
+        android:text="Herramientas y Utilidades"
         android:textColor="#555555"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -55,135 +56,204 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView3">
 
-        <androidx.gridlayout.widget.GridLayout
-            android:id="@+id/scroll_cont"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:columnCount="4"
-            app:alignmentMode="alignMargins"
-            app:columnOrderPreserved="false"
-            android:padding="8dp">
+            android:orientation="vertical"
+            android:padding="12dp">
 
-            <!-- Fila 1, Col 1: Cámara -->
-            <LinearLayout
-                android:layout_width="0dp"
+            <!-- BATERÍA: RECYCLERVIEW DE 100DP DE HEIGHT EN LA PARTE SUPERIOR QUE OCUPA TODO EL WIDTH -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvBateria"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:nestedScrollingEnabled="false"
+                android:layout_marginBottom="12dp" />
+
+            <!-- GRID DE BOTONES DE HERRAMIENTAS ABAJO -->
+            <androidx.gridlayout.widget.GridLayout
+                android:id="@+id/scroll_cont"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_columnWeight="1"
-                app:layout_columnSpan="1"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:padding="8dp">
-                <Button
-                    android:id="@+id/camara"
-                    android:layout_width="72dp"
-                    android:layout_height="72dp"
-                    android:backgroundTint="#D7701D"
-                    android:textColor="#fdf6e3"
-                    android:text="" />
-                <TextView
-                    android:layout_width="wrap_content"
+                app:columnCount="2"
+                app:alignmentMode="alignMargins"
+                app:columnOrderPreserved="false">
+
+                <!-- 1. CÁMARA (FRONTAL / SELFIE) -->
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:text="Cámara"
-                    android:textColor="#000000"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:gravity="center" />
-            </LinearLayout>
+                    app:layout_columnWeight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="8dp">
+                    <Button
+                        android:id="@+id/btn_Camara"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:backgroundTint="#D7701D"
+                        android:text="📷"
+                        android:textSize="28sp"
+                        android:textColor="#fdf6e3" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="Cámara Video"
+                        android:textColor="#000000"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:gravity="center" />
+                </LinearLayout>
 
-            <!-- Fila 1, Col 2-3: Linterna (ToggleButton que ocupa 2 celdas sin backgroundTint) -->
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:layout_columnWeight="2"
-                app:layout_columnSpan="2"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:padding="8dp">
-
-                <ToggleButton
-                    android:id="@+id/btn_Linterna"
-                    android:layout_width="match_parent"
-                    android:layout_height="72dp" />
-                <TextView
-                    android:layout_width="wrap_content"
+                <!-- 2. GRABADORA DE AUDIO (PANTALLA PROPIA) -->
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:text="Linterna"
-                    android:textColor="#000000"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:gravity="center" />
-            </LinearLayout>
+                    app:layout_columnWeight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="8dp">
+                    <Button
+                        android:id="@+id/btn_Grabadora"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:backgroundTint="#D7701D"
+                        android:text="🎙️"
+                        android:textSize="28sp"
+                        android:textColor="#fdf6e3" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="Grabar Audio"
+                        android:textColor="#000000"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:gravity="center" />
+                </LinearLayout>
 
-            <!-- Fila 1, Col 4: Grabadora -->
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:layout_columnWeight="1"
-                app:layout_columnSpan="1"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:padding="8dp">
-                <Button
-                    android:id="@+id/button19"
-                    android:layout_width="72dp"
-                    android:layout_height="72dp"
-                    android:backgroundTint="#D7701D"
-                    android:textColor="#fdf6e3"
-                    android:text="" />
-                <TextView
-                    android:layout_width="wrap_content"
+                <!-- 3. CHAT ASISTENCIA -->
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:text="Grabadora"
-                    android:textColor="#000000"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:gravity="center" />
-            </LinearLayout>
+                    app:layout_columnWeight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="8dp">
+                    <Button
+                        android:id="@+id/btn_Chat"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:backgroundTint="#D7701D"
+                        android:text="💬"
+                        android:textSize="28sp"
+                        android:textColor="#fdf6e3" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="Chat Asistencia"
+                        android:textColor="#000000"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:gravity="center" />
+                </LinearLayout>
 
-            <!-- Fila 2, Col 1: Botón 20 -->
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:layout_columnWeight="1"
-                app:layout_columnSpan="1"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:padding="8dp">
-                <Button
-                    android:id="@+id/button20"
-                    android:layout_width="72dp"
-                    android:layout_height="72dp"
-                    android:backgroundTint="#D7701D"
-                    android:textColor="#fdf6e3"
-                    android:text="" />
-                <TextView
-                    android:layout_width="wrap_content"
+                <!-- 4. GUÍA CATASTROFES -->
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:text="Opción 2"
-                    android:textColor="#000000"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:gravity="center" />
-            </LinearLayout>
+                    app:layout_columnWeight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="8dp">
+                    <Button
+                        android:id="@+id/btn_Guia"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:backgroundTint="#D7701D"
+                        android:text="📖"
+                        android:textSize="28sp"
+                        android:textColor="#fdf6e3" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="Guía Catástrofes"
+                        android:textColor="#000000"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:gravity="center" />
+                </LinearLayout>
 
-            <!-- Fila 2, Col 2: Botón 21 -->
+                <!-- 5. COMANDO POR VOZ (DIRECTO CON TOAST Y SPEECHRECOGNIZER DE GOOGLE) -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_columnWeight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="8dp">
+                    <Button
+                        android:id="@+id/btn_Voz"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:backgroundTint="#D7701D"
+                        android:text="🗣️"
+                        android:textSize="28sp"
+                        android:textColor="#fdf6e3" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="Comando por Voz"
+                        android:textColor="#000000"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:gravity="center" />
+                </LinearLayout>
 
-            <!-- Fila 2, Col 3: Botón 22 -->
+                <!-- 6. ALERTA PÁNICO -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_columnWeight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="8dp">
+                    <Button
+                        android:id="@+id/btn_Panico"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:backgroundTint="#C0392B"
+                        android:text="🚨"
+                        android:textSize="28sp"
+                        android:textColor="#fdf6e3" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="Simular Pánico"
+                        android:textColor="#C0392B"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:gravity="center" />
+                </LinearLayout>
 
-        </androidx.gridlayout.widget.GridLayout>
+            </androidx.gridlayout.widget.GridLayout>
+
+        </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
+    <!-- FOOTER / NAVEGACIÓN INFERIOR -->
     <Button
         android:id="@+id/btn_izq"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:backgroundTint="#D7701D"
-        android:text="Button"
+        android:text="mapa"
         android:textColor="#fdf6e3"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btnmedio"
@@ -195,7 +265,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:backgroundTint="#D7701D"
-        android:text="Button"
+        android:text="home"
         android:textColor="#fdf6e3"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btn_der"
@@ -207,7 +277,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:backgroundTint="#D7701D"
-        android:text="Button"
+        android:text="apps"
         android:textColor="#fdf6e3"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

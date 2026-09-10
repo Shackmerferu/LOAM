@@ -11,9 +11,10 @@
     <uses-feature android:name="android.hardware.camera.any" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" />    <uses-feature android:name="android.hardware.camera.flash" android:required="true" />
+    <uses-feature android:name="android.hardware.camera.flash" android:required="true" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:allowBackup="true"
@@ -25,7 +26,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
         <activity
-            android:name=".presentation.navegacion.MainActivity"
+            android:name=".presentation.home.MainActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
@@ -35,17 +36,35 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".PantallaDerActivity"
-            android:exported="false"
-            android:label="@string/title_activity_pantalla_der"
-            android:theme="@style/Theme.MyApplication.NoActionBar"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".presentation.navegacion.MapActivity"
+            android:name=".presentation.location.MapActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".presentation.navegacion.PantalladerActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".presentation.asistencia.ChatAsistenciaActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".presentation.guide.GuiaCatastrofesActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".presentation.alertapanico.PanicoAlertaActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".presentation.desastre.DesastreAlertaActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".presentation.media.CameraActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".presentation.comandovoz.VoiceActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity

@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fdf6e3"
+    tools:context=".presentation.guide.GuiaCatastrofesActivity">
+
+    <!-- HEADER -->
+    <Button
+        android:id="@+id/btn_salir"
+        android:layout_width="68dp"
+        android:layout_height="44dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="#D7701D"
+        android:text="X"
+        android:textColor="#fdf6e3"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="PreAlertarte"
+        android:textColor="#0d0d0d"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Guía de Acción ante Catástrofes"
+        android:textColor="#555555"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+
+    <!-- CONTENIDO CON GUÍAS, IMÁGENES MAXIMIZADAS Y VIDEOS -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/btn_medio"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView3">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- 1. HURACÁN E INUNDACIÓN -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="#f5eedc"
+                android:padding="16dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="1. Huracán e Inundaciones"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#D7701D" />
+
+                <!-- IMAGEN MAXIMIZADA Y LEGIBLE -->
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    android:layout_marginTop="8dp"
+                    android:src="@drawable/huracan_guia"
+                    android:contentDescription="Guía Huracán" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Consejos de Acción:\n• Diríjase inmediatamente a zonas altas e iluminadas.\n• Evite cruzar corrientes de agua o calles anegadas.\n• Desconecte la electricidad y el gas de la vivienda."
+                    android:textColor="#0d0d0d"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="Video Explicativo (Huracán):"
+                    android:textStyle="bold"
+                    android:textColor="#555555" />
+
+                <VideoView
+                    android:id="@+id/vvVideoHuracan"
+                    android:layout_width="match_parent"
+                    android:layout_height="220dp"
+                    android:layout_marginTop="6dp" />
+            </LinearLayout>
+
+            <!-- 2. TERREMOTO -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="#f5eedc"
+                android:padding="16dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2. Terremoto y Sismos"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#D7701D" />
+
+                <!-- IMAGEN MAXIMIZADA Y LEGIBLE -->
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    android:layout_marginTop="8dp"
+                    android:src="@drawable/terremoto_guia"
+                    android:contentDescription="Guía Terremoto" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Consejos de Acción:\n• Agáchese, Cúbrase debajo de una mesa firme y Agárrese.\n• Manténgase alejado de ventanas, vidrios y objetos pesados.\n• No use ascensores durante el sismo."
+                    android:textColor="#0d0d0d"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="Video Explicativo (Terremoto):"
+                    android:textStyle="bold"
+                    android:textColor="#555555" />
+
+                <VideoView
+                    android:id="@+id/vvVideoTerremoto"
+                    android:layout_width="match_parent"
+                    android:layout_height="220dp"
+                    android:layout_marginTop="6dp" />
+            </LinearLayout>
+
+            <!-- 3. TSUNAMI -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="#f5eedc"
+                android:padding="16dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="3. Tsunami y Marejadas"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#D7701D" />
+
+                <!-- IMAGEN MAXIMIZADA Y LEGIBLE -->
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    android:layout_marginTop="8dp"
+                    android:src="@drawable/tsunami_guia"
+                    android:contentDescription="Guía Tsunami" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Consejos de Acción:\n• Aléjese de la costa inmediatamente tras sentir un sismo fuerte.\n• Busque terrenos con al menos 30 metros de altura sobre el nivel del mar.\n• Permanezca en zonas elevadas hasta que las autoridades declaren el fin del peligro."
+                    android:textColor="#0d0d0d"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="Video Explicativo (Tsunami):"
+                    android:textStyle="bold"
+                    android:textColor="#555555" />
+
+                <VideoView
+                    android:id="@+id/vvVideoTsunami"
+                    android:layout_width="match_parent"
+                    android:layout_height="220dp"
+                    android:layout_marginTop="6dp" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- FOOTER -->
+    <Button
+        android:id="@+id/btn_izq"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="#D7701D"
+        android:text="mapa"
+        android:textColor="#fdf6e3"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btn_medio"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btn_medio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="#D7701D"
+        android:text="home"
+        android:textColor="#fdf6e3"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btn_der"
+        app:layout_constraintStart_toEndOf="@+id/btn_izq" />
+
+    <Button
+        android:id="@+id/btn_der"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="#D7701D"
+        android:text="apps"
+        android:textColor="#fdf6e3"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btn_medio" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

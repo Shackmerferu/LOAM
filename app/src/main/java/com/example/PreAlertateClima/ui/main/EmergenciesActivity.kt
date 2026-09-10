@@ -2,12 +2,12 @@ package com.example.PreAlertateClima.ui.main
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.PreAlertateClima.R
+import com.example.PreAlertateClima.presentation.base.DisasterActivity
 
-class EmergenciesActivity : AppCompatActivity() {
+class EmergenciesActivity : DisasterActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()

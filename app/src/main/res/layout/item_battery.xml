@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="#f5eedc"
+    android:padding="12dp"
+    android:layout_marginBottom="12dp">
+
+    <TextView
+        android:id="@+id/tvBatteryPercentage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🔋 Batería: --%"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="#0d0d0d" />
+
+    <TextView
+        android:id="@+id/tvBatteryTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Tiempo estimado restante: Calculando..."
+        android:textSize="14sp"
+        android:textColor="#555555" />
+
+</LinearLayout>
