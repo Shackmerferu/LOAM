@@ -29,7 +29,7 @@
         android:layout_marginHorizontal="32dp"
         android:layout_marginTop="24dp"
         android:gravity="center"
-        android:text="Se ha detectado una catástrofe en tiempo real enviada desde la base de datos de emergencia.\n\nLuz de socorro, linterna, vibración y alarma activa."
+        android:text="Se ha detectado una catástrofe en tiempo real , mantente a salvo y seguro , ingresa ya a la guia para leer el soporte ante catastrofes"
         android:textColor="#000000"
         android:textSize="16sp"
         android:textStyle="bold"

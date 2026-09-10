@@ -28,7 +28,7 @@
         android:layout_marginHorizontal="32dp"
         android:layout_marginTop="24dp"
         android:gravity="center"
-        android:text="Simulación de señal de socorro activada manualmente.\n\nPantalla y linterna parpadeando alternadamente (Rojo / Blanco) con alarma sonora."
+        android:text="Señal de socorro activada."
         android:textColor="#000000"
         android:textSize="16sp"
         android:textStyle="bold"
