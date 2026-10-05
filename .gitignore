@@ -1,4 +1,4 @@
-# Flutter / Dart
+# Flutter y Dart
 .dart_tool/
 .flutter-plugins
 .flutter-plugins-dependencies
@@ -7,45 +7,33 @@
 .pub/
 build/
 bin/cache/
+lib/generated_plugin_registrant.dart
 
-# Archivos de depuración y registro
-*.log
-*.map
-*.js.map
-
-# IDEs y Editores
+# IDEs y editores de código
 .idea/
 *.iml
-*.iws
 *.ipr
+*.iws
 .vscode/
 *.swp
 *.swo
 *~
 
-# Sistema Operativo
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# Android
+# Android (incluye caches locales detectadas)
+.gradle/
 **/android/.gradle/
-**/android/captures/
-**/android/gradle/
-**/android/gradlew
-**/android/gradlew.bat
+**/android/.kotlin/
 **/android/local.properties
+**/android/captures/
 **/android/**/GeneratedPluginRegistrant.java
 **/android/**/gradle-wrapper.jar
+*.apk
+*.aab
 *.ap_
 *.dex
 *.class
 
-# iOS / macOS
+# iOS y macOS
 **/ios/**/DerivedData/
 **/ios/**/Pods/
 **/ios/**/.symlinks/
@@ -67,15 +55,37 @@ Thumbs.db
 **/ios/**/*.moved-aside
 **/ios/**/*.pbxuser
 **/ios/**/*.perspectivev3
+**/macos/Flutter/ephemeral/
 
-# Windows Desktop
+# Entornos de escritorio (Windows / Linux)
 **/windows/flutter/ephemeral/
 **/windows/flutter/generated_plugin_registrant.cc
 **/windows/flutter/generated_plugin_registrant.h
 **/windows/flutter/generated_plugins.cmake
-
-# Linux Desktop
 **/linux/flutter/ephemeral/
 **/linux/flutter/generated_plugin_registrant.cc
 **/linux/flutter/generated_plugin_registrant.h
-**/
+**/linux/flutter/generated_plugins.cmake
+
+# Archivos de registro y temporales del sistema
+*.log
+*.map
+*.js.map
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Símbolos y depuración
+*.dSYM.zip
+*.dSYM
+
+# Credenciales, certificados y firmas
+*.keystore
+*.jks
+key.properties
+google-services.json
+GoogleService-Info.plist
