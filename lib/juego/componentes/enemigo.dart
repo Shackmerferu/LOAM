@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import '../../estado/estado_juego.dart';
@@ -6,7 +5,8 @@ import '../juego_supervivencia.dart';
 import 'diamante.dart';
 
 enum EstadoEnemigo { caminando, muriendo }
-enum TipoMonstruo { limo, duende, espectro }
+enum TipoMonstruo { limo, lobo, slime, esqueleto, miniGolem }
+typedef TipoEnemigo = TipoMonstruo;
 
 class Enemigo extends SpriteAnimationGroupComponent<EstadoEnemigo>
     with HasGameReference<JuegoSupervivencia>, CollisionCallbacks {
@@ -18,6 +18,8 @@ class Enemigo extends SpriteAnimationGroupComponent<EstadoEnemigo>
   late double velocidad;
   late double danio;
   late double xpOtorgada;
+
+  double get radio => size.x * 0.4;
 
   Enemigo({
     required this.tipo,
@@ -35,18 +37,25 @@ class Enemigo extends SpriteAnimationGroupComponent<EstadoEnemigo>
     final mult = estadoJuego.multiplicadorEnemigo;
     switch (tipo) {
       case TipoMonstruo.limo:
+      case TipoMonstruo.slime:
         vidaMax = 40.0 * mult;
         velocidad = 65.0 * (mult > 1.0 ? 1.3 : 1.0);
         danio = 8.0 * mult;
         xpOtorgada = 20.0;
         break;
-      case TipoMonstruo.duende:
-        vidaMax = 25.0 * mult;
-        velocidad = 110.0 * (mult > 1.0 ? 1.25 : 1.0);
-        danio = 6.0 * mult;
-        xpOtorgada = 15.0;
+      case TipoMonstruo.lobo:
+        vidaMax = 30.0 * mult;
+        velocidad = 120.0 * (mult > 1.0 ? 1.35 : 1.0);
+        danio = 10.0 * mult;
+        xpOtorgada = 25.0;
         break;
-      case TipoMonstruo.espectro:
+      case TipoMonstruo.esqueleto:
+        vidaMax = 90.0 * mult;
+        velocidad = 55.0 * (mult > 1.0 ? 1.2 : 1.0);
+        danio = 16.0 * mult;
+        xpOtorgada = 45.0;
+        break;
+      case TipoMonstruo.miniGolem:
         vidaMax = 120.0 * mult;
         velocidad = 45.0 * (mult > 1.0 ? 1.2 : 1.0);
         danio = 18.0 * mult;
@@ -60,7 +69,6 @@ class Enemigo extends SpriteAnimationGroupComponent<EstadoEnemigo>
   Future<void> onLoad() async {
     await super.onLoad();
 
-    // Carga de hojas de sprites por carpeta: assets/images/monstruos/<tipo>_...
     final animCaminar = await game.loadSpriteAnimation(
       'monstruos/${tipo.name}_caminar.png',
       SpriteAnimationData.sequenced(
@@ -86,7 +94,7 @@ class Enemigo extends SpriteAnimationGroupComponent<EstadoEnemigo>
     };
 
     current = EstadoEnemigo.caminando;
-    add(CircleHitbox(radius: size.x * 0.35, anchor: Anchor.center, position: size / 2));
+    add(CircleHitbox(radius: radio, anchor: Anchor.center, position: size / 2));
   }
 
   @override
@@ -105,14 +113,13 @@ class Enemigo extends SpriteAnimationGroupComponent<EstadoEnemigo>
     final direccion = (posicionJugador - position).normalized();
     position.add(direccion * velocidad * dt);
 
-    // Orientación del sprite (flip horizontal según la trayectoria)
     if (direccion.x < 0 && scale.x > 0) {
       flipHorizontally();
     } else if (direccion.x > 0 && scale.x < 0) {
       flipHorizontally();
     }
 
-    if (position.distanceTo(posicionJugador) <= (size.x * 0.4) + 16.0) {
+    if (position.distanceTo(posicionJugador) <= radio + 16.0) {
       game.jugador.recibirDanio(danio * dt);
     }
   }
@@ -127,8 +134,6 @@ class Enemigo extends SpriteAnimationGroupComponent<EstadoEnemigo>
 
   void _activarMuerte() {
     current = EstadoEnemigo.muriendo;
-
-    // Desactivar cajas de colisión para cesar el daño sobre el jugador
     children.whereType<CircleHitbox>().forEach((hitbox) => hitbox.removeFromParent());
 
     final subioNivel = estadoJuego.sumarXp(xpOtorgada);
@@ -136,7 +141,7 @@ class Enemigo extends SpriteAnimationGroupComponent<EstadoEnemigo>
       game.activarSubidaNivel();
     }
 
-    game.add(
+    game.mundo.add(
       Diamante(
         estadoJuego: estadoJuego,
         posicionInicial: position.clone(),

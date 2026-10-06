@@ -22,7 +22,6 @@ class Diamante extends SpriteAnimationComponent with HasGameReference<JuegoSuper
   Future<void> onLoad() async {
     await super.onLoad();
 
-    // Sprite rotatorio o con destello: assets/images/items/diamante_anim.png
     animation = await game.loadSpriteAnimation(
       'items/diamante_anim.png',
       SpriteAnimationData.sequenced(

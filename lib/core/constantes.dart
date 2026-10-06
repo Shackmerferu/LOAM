@@ -1,26 +1,31 @@
+import 'package:flutter/material.dart';
+
 class GameConstants {
-  // Tiempos de partida (en segundos)
-  static const double matchDuration = 600.0; // 10 minutos
-  static const double storeInterval = 300.0; // 5 minutos
-  static const double hordeEventTime = 360.0; // 6 minutos
+  // Tiempos (segundos)
+  static const double duracionMaximaPartida = 600.0;
+  static const double tiempoTiendaMinuto5 = 300.0;
+  static const double tiempoHordaMinuto6 = 360.0;
 
-  // Mecánicas de horda especial (Minuto 6)
-  static const double hordeStatMultiplier = 2.5;
-  static const double arenaSquareSize = 400.0; // Tamaño del área delimitada
+  // Horda y área
+  static const int minEnemigos = 10;
+  static const int maxEnemigos = 15;
+  static const double multiplicadorHordaMinuto6 = 2.5;
+  static const double tamanoAreaRestringida = 360.0;
 
-  // Spawner de enemigos
-  static const int minEnemies = 10;
-  static const int maxEnemies = 15;
-  static const double spawnRadius = 350.0;
+  // Progresión y armas
+  static const int maxWeaponLevel = 7;
+  static const int nivelEvolucionArma = maxWeaponLevel;
 
-  // Economía y recompensas
-  static const int minDiamondDrop = 10;
-  static const int maxDiamondDrop = 100;
+  // Economía
+  static const int dropMinDiamantes = 10;
+  static const int dropMaxDiamantes = 100;
+  static const int penalizacionDiamantesMuerte = 50;
 
-  // Sistema de armas
-  static const int maxWeaponLevel = 7; // Umbral de evolución a mejora especial
-
-  // Valores predeterminados del jugador
-  static const double playerBaseSpeed = 150.0;
-  static const double playerBaseHp = 100.0;
+  // Paleta de colores para la UI
+  static const Color fondoOscuro = Color(0xFF110E1B);
+  static const Color fondoClaro = Color(0xFFECEFF4);
+  static const Color superficieOscura = Color(0xFF1E1A2E);
+  static const Color superficieClara = Color(0xFFFFFFFF);
+  static const Color acentoMagico = Color(0xFF8A3FFC);
+  static const Color acentoDiamante = Color(0xFF00E5FF);
 }

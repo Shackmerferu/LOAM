@@ -1,17 +1,16 @@
 import 'package:flame/game.dart';
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../core/constantes.dart';
 import '../estado/estado_juego.dart';
 import '../juego/juego_supervivencia.dart';
-import 'widgets/cabecera_juego.dart';
-import 'widgets/barra_controles.dart';
+import 'overlays/modal_anuncio.dart';
 import 'overlays/modal_subir_nivel.dart';
 import 'overlays/modal_tienda.dart';
-import 'overlays/modal_anuncio.dart';
+import 'widgets/cabecera_juego.dart';
 
 class PantallaJuego extends StatefulWidget {
-  final GameState estadoJuego;
-
-  const PantallaJuego({super.key, required this.estadoJuego});
+  const PantallaJuego({super.key});
 
   @override
   State<PantallaJuego> createState() => _PantallaJuegoState();
@@ -23,87 +22,81 @@ class _PantallaJuegoState extends State<PantallaJuego> {
   @override
   void initState() {
     super.initState();
-    _juego = JuegoSupervivencia(estadoJuego: widget.estadoJuego);
+    final estado = Provider.of<EstadoJuego>(context, listen: false);
+    _juego = JuegoSupervivencia(estadoJuego: estado);
   }
 
   @override
   Widget build(BuildContext context) {
+    final estado = context.watch<EstadoJuego>();
+
+    if (estado.finPartida && !_juego.overlays.isActive('ModalAnuncio')) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _juego.overlays.add('ModalAnuncio');
+      });
+    }
+
     return Scaffold(
-      body: Column(
-        children: [
-          CabeceraJuego(estadoJuego: widget.estadoJuego),
-          Expanded(
-            child: Stack(
-              children: [
-                GameWidget<JuegoSupervivencia>(
-                  game: _juego,
-                  overlayBuilderMap: {
-                    'ModalSubirNivel': (context, game) => ModalSubirNivel(
-                      estadoJuego: widget.estadoJuego,
-                      juego: game,
-                    ),
-                    'ModalTienda': (context, game) => ModalTienda(
-                      estadoJuego: widget.estadoJuego,
-                      juego: game,
-                    ),
-                    'ModalAnuncio': (context, game) => ModalAnuncio(
-                      estadoJuego: widget.estadoJuego,
-                      juego: game,
-                    ),
-                  },
-                ),
-                ListenableBuilder(
-                  listenable: widget.estadoJuego,
-                  builder: (context, _) {
-                    if (!widget.estadoJuego.isGameOver) {
-                      return const SizedBox.shrink();
-                    }
-                    return Container(
-                      color: Colors.black.withOpacity(0.8),
-                      child: Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Text(
-                              'FIN DE LA PARTIDA',
-                              style: TextStyle(
-                                color: Colors.redAccent,
-                                fontSize: 26,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              'Puntuación final: ${widget.estadoJuego.score}',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.cyanAccent,
-                                foregroundColor: Colors.black,
-                              ),
-                              onPressed: () {
-                                _juego.reiniciar();
-                                widget.estadoJuego.resetGame();
-                              },
-                              child: const Text('VOLVER A INTENTAR'),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ],
+      backgroundColor: estado.modoOscuro ? GameConstants.fondoOscuro : GameConstants.fondoClaro,
+      body: SafeArea(
+        child: Column(
+          children: [
+            CabeceraJuego(estadoJuego: estado),
+            Expanded(
+              child: GameWidget<JuegoSupervivencia>(
+                game: _juego,
+                overlayBuilderMap: {
+                  'ModalSubirNivel': (ctx, game) =>
+                      ModalSubirNivel(estadoJuego: estado, juego: game),
+                  'ModalTienda': (ctx, game) =>
+                      ModalTienda(estadoJuego: estado, juego: game),
+                  'ModalAnuncio': (ctx, game) =>
+                      ModalAnuncio(estadoJuego: estado, juego: game),
+                },
+              ),
             ),
+            _construirBotoneraExterna(estado),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _construirBotoneraExterna(EstadoJuego estado) {
+    final colorFondo = estado.modoOscuro ? GameConstants.superficieOscura : GameConstants.superficieClara;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      color: colorFondo,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          ElevatedButton.icon(
+            icon: const Icon(Icons.play_arrow),
+            label: const Text('Iniciar'),
+            onPressed: estado.enJuego ? null : () => estado.iniciarPartida(),
           ),
-          BarraControles(
-            estadoJuego: widget.estadoJuego,
-            juego: _juego,
+          ElevatedButton.icon(
+            icon: Icon(estado.enPausa ? Icons.play_arrow : Icons.pause),
+            label: Text(estado.enPausa ? 'Reanudar' : 'Pausar'),
+            onPressed: !estado.enJuego
+                ? null
+                : () {
+              if (estado.enPausa) {
+                estado.reanudarPartida();
+              } else {
+                estado.pausarPartida();
+              }
+            },
+          ),
+          ElevatedButton.icon(
+            icon: const Icon(Icons.refresh),
+            label: const Text('Reiniciar'),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent.shade700),
+            onPressed: () {
+              _juego.overlays.clear();
+              estado.reiniciarPartida();
+            },
           ),
         ],
       ),

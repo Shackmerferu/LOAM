@@ -46,9 +46,9 @@ class GeneradorEnemigos extends Component
     TipoEnemigo tipo = TipoEnemigo.slime;
     final r = _random.nextDouble();
     if (r < 0.25) {
-      tipo = TipoEnemigo.fantasma;
+      tipo = TipoEnemigo.lobo;
     } else if (r < 0.40 && estadoJuego.gameTime > 60) {
-      tipo = TipoEnemigo.miniGolen;
+      tipo = TipoEnemigo.esqueleto;
     }
 
     game.add(
