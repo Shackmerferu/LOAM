@@ -57,6 +57,7 @@ class EstadoJuego extends ChangeNotifier {
   bool tiendaMinuto5Mostrada = false;
 
   void iniciarPartida() {
+    debugPrint('[DEBUG_ESTADO] iniciarPartida() llamado');
     enJuego = true;
     enPausa = false;
     finPartida = false;
@@ -66,18 +67,36 @@ class EstadoJuego extends ChangeNotifier {
   void startGame() => iniciarPartida();
 
   void pausarPartida() {
+    debugPrint('[DEBUG_ESTADO] pausarPartida() llamado');
     enPausa = true;
     notificarSeguro();
   }
   void pauseGame() => pausarPartida();
 
   void reanudarPartida() {
+    debugPrint('[DEBUG_ESTADO] reanudarPartida() llamado');
     enPausa = false;
     notificarSeguro();
   }
   void resumeGame() => reanudarPartida();
 
+  void asignarArmaInicialAleatoria() {
+    nivelEspada = 0;
+    nivelArco = 0;
+    nivelMagia = 0;
+    final r = _random.nextInt(3);
+    if (r == 0) {
+      nivelEspada = 1;
+    } else if (r == 1) {
+      nivelArco = 1;
+    } else {
+      nivelMagia = 1;
+    }
+    debugPrint('[DEBUG_ESTADO] Arma inicial asignada - Espada: $nivelEspada, Arco: $nivelArco, Magia: $nivelMagia');
+  }
+
   void reiniciarPartida() {
+    debugPrint('[DEBUG_ESTADO] reiniciarPartida() llamado');
     tiempoPartida = 0.0;
     _ultimoSegundoNotificado = -1;
     puntaje = 0;
@@ -86,9 +105,7 @@ class EstadoJuego extends ChangeNotifier {
     xpObjetivo = 100.0;
     vidaMax = 100.0;
     vidaActual = 100.0;
-    nivelEspada = 1;
-    nivelArco = 1;
-    nivelMagia = 1;
+    asignarArmaInicialAleatoria();
     tiendaMinuto5Mostrada = false;
     finPartida = false;
     iniciarPartida();

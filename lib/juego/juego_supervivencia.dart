@@ -53,17 +53,37 @@ class JuegoSupervivencia extends FlameGame with HasCollisionDetection, DragCallb
 
   @override
   Future<void> onLoad() async {
-    await super.onLoad();
+    super.onLoad();
+    debugPrint('[DEBUG_JUEGO] onLoad() iniciado - Precaricando imágenes...');
+
+    await images.loadAll([
+      'personajes/jugador_quieto.png',
+      'personajes/jugador_caminar.png',
+      'personajes/jugador_herido.png',
+      'personajes/jugador_muerte.png',
+      'personajes/jugador_levelup.png',
+      'monstruos/limo_caminar.png',
+      'monstruos/limo_muerte.png',
+      'monstruos/lobo_caminar.png',
+      'monstruos/lobo_muerte.png',
+      'monstruos/slime_caminar.png',
+      'monstruos/slime_muerte.png',
+      'monstruos/esqueleto_caminar.png',
+      'monstruos/esqueleto_muerte.png',
+      'monstruos/minigolem_caminar.png',
+      'monstruos/minigolem_muerte.png',
+      'items/diamante.png',
+    ]);
+    debugPrint('[DEBUG_JUEGO] Imágenes precarizadas con éxito');
 
     await world.add(FondoCuadricula());
 
     jugador = Jugador(estadoJuego: estadoJuego);
     await world.add(jugador);
+    debugPrint('[DEBUG_JUEGO] Jugador añadido al mundo en posición: ${jugador.position}');
 
-    // Integración del arsenal en el World
-    await world.add(Espada(estadoJuego: estadoJuego));
-    await world.add(Arco(estadoJuego: estadoJuego));
-    await world.add(MagiaFuego(estadoJuego: estadoJuego));
+    estadoJuego.asignarArmaInicialAleatoria();
+    _inicializarArmaActual();
 
     camera.viewfinder.anchor = Anchor.center;
     camera.follow(jugador);
@@ -73,6 +93,7 @@ class JuegoSupervivencia extends FlameGame with HasCollisionDetection, DragCallb
     }
 
     _spawnOleadaInicial();
+    debugPrint('[DEBUG_JUEGO] onLoad() finalizado correctamente');
   }
 
   void _spawnOleadaInicial() {
@@ -89,17 +110,42 @@ class JuegoSupervivencia extends FlameGame with HasCollisionDetection, DragCallb
     }
   }
 
+  Vector2 _vectorDrag = Vector2.zero();
+  bool _estaArrastrando = false;
+
+  @override
+  void onDragStart(DragStartEvent event) {
+    super.onDragStart(event);
+    _vectorDrag = Vector2.zero();
+    _estaArrastrando = true;
+  }
+
   @override
   void onDragUpdate(DragUpdateEvent event) {
     super.onDragUpdate(event);
     if (estadoJuego.enJuego && !estadoJuego.enPausa && !estadoJuego.finPartida) {
-      jugador.mover(event.localDelta);
+      if (_estaArrastrando) {
+        _vectorDrag += event.localDelta;
+        if (_vectorDrag.length > 2.0) {
+          jugador.mover(_vectorDrag.normalized());
+        }
+      }
     }
   }
 
   @override
   void onDragEnd(DragEndEvent event) {
     super.onDragEnd(event);
+    _estaArrastrando = false;
+    _vectorDrag = Vector2.zero();
+    jugador.mover(Vector2.zero());
+  }
+
+  @override
+  void onDragCancel(DragCancelEvent event) {
+    super.onDragCancel(event);
+    _estaArrastrando = false;
+    _vectorDrag = Vector2.zero();
     jugador.mover(Vector2.zero());
   }
 
@@ -107,6 +153,16 @@ class JuegoSupervivencia extends FlameGame with HasCollisionDetection, DragCallb
   void update(double dt) {
     super.update(dt);
     if (!estadoJuego.enJuego || estadoJuego.enPausa || estadoJuego.finPartida) return;
+
+    if (estadoJuego.swordLevel > 0 && world.children.whereType<Espada>().isEmpty) {
+      world.add(Espada(estadoJuego: estadoJuego));
+    }
+    if (estadoJuego.bowLevel > 0 && world.children.whereType<Arco>().isEmpty) {
+      world.add(Arco(estadoJuego: estadoJuego));
+    }
+    if (estadoJuego.fireMagicLevel > 0 && world.children.whereType<MagiaFuego>().isEmpty) {
+      world.add(MagiaFuego(estadoJuego: estadoJuego));
+    }
 
     estadoJuego.actualizarTiempo(dt);
 
@@ -124,14 +180,14 @@ class JuegoSupervivencia extends FlameGame with HasCollisionDetection, DragCallb
   }
 
   void _regularHorda() {
-    final cantidadActual = world.children.whereType<Enemigo>().length;
+    final cantidadActual = world.children.whereType<Enemigo>().where((e) => e.current != EstadoEnemigo.muriendo).length;
     if (cantidadActual >= GameConstants.maxEnemigos) return;
 
     final faltantes = GameConstants.minEnemigos - cantidadActual;
     final porGenerar = faltantes > 0 ? faltantes.clamp(1, 3) : 1;
 
     for (int i = 0; i < porGenerar; i++) {
-      if (world.children.whereType<Enemigo>().length >= GameConstants.maxEnemigos) break;
+      if (world.children.whereType<Enemigo>().where((e) => e.current != EstadoEnemigo.muriendo).length >= GameConstants.maxEnemigos) break;
 
       final angulo = _random.nextDouble() * 2 * pi;
       const double distancia = 400.0;
@@ -156,6 +212,34 @@ class JuegoSupervivencia extends FlameGame with HasCollisionDetection, DragCallb
     }
   }
 
+  void respawnEnemigoTrasMuerte() {
+    final cantidadActual = world.children.whereType<Enemigo>().where((e) => e.current != EstadoEnemigo.muriendo).length;
+    if (cantidadActual >= GameConstants.maxEnemigos) return;
+
+    final angulo = _random.nextDouble() * 2 * pi;
+    const double distancia = 380.0;
+    final spawn = Vector2(
+      jugador.position.x + cos(angulo) * distancia,
+      jugador.position.y + sin(angulo) * distancia,
+    );
+
+    final r = _random.nextDouble();
+    TipoMonstruo tipo = TipoMonstruo.limo;
+    if (r < 0.35) {
+      tipo = TipoMonstruo.lobo;
+    } else if (r < 0.65 && estadoJuego.tiempoPartida > 60) {
+      tipo = TipoMonstruo.esqueleto;
+    } else if (r < 0.85 && estadoJuego.tiempoPartida > 120) {
+      tipo = TipoMonstruo.miniGolem;
+    }
+
+    world.add(Enemigo(
+      tipo: tipo,
+      estadoJuego: estadoJuego,
+      posicionInicial: spawn,
+    ));
+  }
+
   void activarSubidaNivel() {
     jugador.animarSubidaNivel();
     pausarPorOverlay('ModalSubirNivel');
@@ -171,10 +255,25 @@ class JuegoSupervivencia extends FlameGame with HasCollisionDetection, DragCallb
     estadoJuego.reanudarPartida();
   }
 
+  void _inicializarArmaActual() {
+    if (estadoJuego.swordLevel > 0) {
+      world.add(Espada(estadoJuego: estadoJuego));
+    } else if (estadoJuego.bowLevel > 0) {
+      world.add(Arco(estadoJuego: estadoJuego));
+    } else if (estadoJuego.fireMagicLevel > 0) {
+      world.add(MagiaFuego(estadoJuego: estadoJuego));
+    }
+  }
+
   void reiniciar() {
+    debugPrint('[DEBUG_JUEGO] reiniciar() llamado');
     overlays.clear();
     world.children.whereType<Enemigo>().forEach((e) => e.removeFromParent());
+    world.children.whereType<Espada>().forEach((e) => e.removeFromParent());
+    world.children.whereType<Arco>().forEach((e) => e.removeFromParent());
+    world.children.whereType<MagiaFuego>().forEach((e) => e.removeFromParent());
     estadoJuego.reiniciarPartida();
+    _inicializarArmaActual();
     _spawnOleadaInicial();
   }
 }

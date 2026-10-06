@@ -1,5 +1,6 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flame/sprite.dart';
 import 'package:flutter/material.dart';
 import '../../estado/estado_juego.dart';
 import '../juego_supervivencia.dart';
@@ -10,215 +11,276 @@ enum TipoMonstruo { limo, lobo, slime, esqueleto, miniGolem }
 typedef TipoEnemigo = TipoMonstruo;
 
 class Enemigo extends SpriteAnimationGroupComponent<EstadoEnemigo>
-    with HasGameReference<JuegoSupervivencia>, CollisionCallbacks {
-  final TipoMonstruo tipo;
-  final EstadoJuego estadoJuego;
+with HasGameReference<JuegoSupervivencia>, CollisionCallbacks {
+final TipoMonstruo tipo;
+final EstadoJuego estadoJuego;
 
-  late double vidaMax;
-  late double vidaActual;
-  late double velocidad;
-  late double danio;
-  late double xpOtorgada;
+late double vidaMax;
+late double vidaActual;
+late double velocidad;
+late double danio;
+late double xpOtorgada;
 
-  bool _spritesCargados = false;
-  double _timerMuerteFallback = 0.0;
-  static const double _duracionMuerteFallback = 0.35;
+double get radio => size.x * 0.4;
 
-  double get radio => size.x * 0.4;
+String get _nombreCaminarAsset {
+switch (tipo) {
+case TipoMonstruo.limo:
+return 'limo_caminar';
+case TipoMonstruo.lobo:
+return 'lobo_caminar';
+case TipoMonstruo.slime:
+return 'slime_caminar';
+case TipoMonstruo.esqueleto:
+return 'esqueleto_caminar';
+case TipoMonstruo.miniGolem:
+return 'minigolem_caminar';
+}
+}
 
-  Enemigo({
-    required this.tipo,
-    required this.estadoJuego,
-    required Vector2 posicionInicial,
-  }) : super(
-    position: posicionInicial,
-    size: Vector2(48, 48),
-    anchor: Anchor.center,
-  ) {
-    _configurarEstadisticas();
-  }
+String get _nombreMuerteAsset {
+switch (tipo) {
+case TipoMonstruo.limo:
+return 'limo_muerte';
+case TipoMonstruo.lobo:
+return 'lobo_muerte';
+case TipoMonstruo.slime:
+return 'slime_muerte';
+case TipoMonstruo.esqueleto:
+return 'esqueleto_muerte';
+case TipoMonstruo.miniGolem:
+return 'minigolem_muerte';
+}
+}
 
-  void _configurarEstadisticas() {
-    final mult = estadoJuego.multiplicadorEnemigo;
-    switch (tipo) {
-      case TipoMonstruo.limo:
-      case TipoMonstruo.slime:
-        vidaMax = 40.0 * mult;
-        velocidad = 65.0 * (mult > 1.0 ? 1.3 : 1.0);
-        danio = 8.0 * mult;
-        xpOtorgada = 20.0;
-        break;
-      case TipoMonstruo.lobo:
-        vidaMax = 30.0 * mult;
-        velocidad = 120.0 * (mult > 1.0 ? 1.35 : 1.0);
-        danio = 10.0 * mult;
-        xpOtorgada = 25.0;
-        break;
-      case TipoMonstruo.esqueleto:
-        vidaMax = 90.0 * mult;
-        velocidad = 55.0 * (mult > 1.0 ? 1.2 : 1.0);
-        danio = 16.0 * mult;
-        xpOtorgada = 45.0;
-        break;
-      case TipoMonstruo.miniGolem:
-        vidaMax = 120.0 * mult;
-        velocidad = 45.0 * (mult > 1.0 ? 1.2 : 1.0);
-        danio = 18.0 * mult;
-        xpOtorgada = 50.0;
-        break;
-    }
-    vidaActual = vidaMax;
-  }
+int get _framesCaminar {
+switch (tipo) {
+case TipoMonstruo.limo:
+case TipoMonstruo.slime:
+return 8;
+case TipoMonstruo.lobo:
+return 11;
+case TipoMonstruo.esqueleto:
+return 7;
+case TipoMonstruo.miniGolem:
+return 8;
+}
+}
 
-  @override
-  Future<void> onLoad() async {
-    await super.onLoad();
+int get _framesMuerte {
+switch (tipo) {
+case TipoMonstruo.limo:
+case TipoMonstruo.slime:
+return 3;
+case TipoMonstruo.lobo:
+return 2;
+case TipoMonstruo.esqueleto:
+return 5;
+case TipoMonstruo.miniGolem:
+return 6;
+}
+}
 
-    try {
-      final animCaminar = await game.loadSpriteAnimation(
-        'monstruos/${tipo.name}_caminar.png',
-        SpriteAnimationData.sequenced(
-          amount: 4,
-          stepTime: 0.15,
-          textureSize: Vector2(32, 32),
-        ),
-      );
+Vector2 get _tamanoFrame {
+switch (tipo) {
+case TipoMonstruo.limo:
+return Vector2(32, 32);
+case TipoMonstruo.lobo:
+return Vector2(32, 32);
+case TipoMonstruo.slime:
+return Vector2(32, 32);
+case TipoMonstruo.esqueleto:
+return Vector2(32, 32);
+case TipoMonstruo.miniGolem:
+return Vector2(32, 32);
+}
+}
 
-      final animMuerte = await game.loadSpriteAnimation(
-        'monstruos/${tipo.name}_muerte.png',
-        SpriteAnimationData.sequenced(
-          amount: 6,
-          stepTime: 0.08,
-          textureSize: Vector2(32, 32),
-          loop: false,
-        ),
-      );
+Enemigo({
+required this.tipo,
+required this.estadoJuego,
+required Vector2 posicionInicial,
+}) : super(
+position: posicionInicial,
+size: Vector2.all(32),
+anchor: Anchor.center,
+) {
+_configurarEstadisticas();
+}
 
-      animations = {
-        EstadoEnemigo.caminando: animCaminar,
-        EstadoEnemigo.muriendo: animMuerte,
-      };
+void _configurarEstadisticas() {
+final mult = estadoJuego.multiplicadorEnemigo;
 
-      current = EstadoEnemigo.caminando;
-      _spritesCargados = true;
-    } catch (_) {
-      _spritesCargados = false;
-      current = EstadoEnemigo.caminando;
-    }
+switch (tipo) {
+case TipoMonstruo.limo:
+case TipoMonstruo.slime:
+vidaMax = 40.0 * mult;
+velocidad = 65.0 * (mult > 1.0 ? 1.3 : 1.0);
+danio = 8.0 * mult;
+xpOtorgada = 20.0;
+break;
+case TipoMonstruo.lobo:
+vidaMax = 30.0 * mult;
+velocidad = 120.0 * (mult > 1.0 ? 1.35 : 1.0);
+danio = 10.0 * mult;
+xpOtorgada = 25.0;
+break;
+case TipoMonstruo.esqueleto:
+vidaMax = 90.0 * mult;
+velocidad = 55.0 * (mult > 1.0 ? 1.2 : 1.0);
+danio = 16.0 * mult;
+xpOtorgada = 45.0;
+break;
+case TipoMonstruo.miniGolem:
+vidaMax = 120.0 * mult;
+velocidad = 45.0 * (mult > 1.0 ? 1.2 : 1.0);
+danio = 18.0 * mult;
+xpOtorgada = 50.0;
+break;
+}
 
-    add(CircleHitbox(radius: radio, anchor: Anchor.center, position: size / 2));
-  }
+vidaActual = vidaMax;
+}
 
-  @override
-  void update(double dt) {
-    super.update(dt);
-    if (!estadoJuego.enJuego || estadoJuego.enPausa || estadoJuego.finPartida) return;
+@override
+Future<void> onLoad() async {
+await super.onLoad();
 
-    if (current == EstadoEnemigo.muriendo) {
-      if (_spritesCargados) {
-        if (animationTicker?.done() ?? false) {
-          removeFromParent();
-        }
-      } else {
-        _timerMuerteFallback += dt;
-        if (_timerMuerteFallback >= _duracionMuerteFallback) {
-          removeFromParent();
-        }
-      }
-      return;
-    }
+animations = {
+EstadoEnemigo.caminando: await _cargarAnimacion(
+'monstruos/$_nombreCaminarAsset.png',
+_framesCaminar,
+0.15,
+),
+EstadoEnemigo.muriendo: await _cargarAnimacion(
+'monstruos/$_nombreMuerteAsset.png',
+_framesMuerte,
+0.08,
+),
+};
 
-    final posicionJugador = game.jugador.position;
-    final direccion = (posicionJugador - position).normalized();
-    position.add(direccion * velocidad * dt);
+current = EstadoEnemigo.caminando;
 
-    if (direccion.x < 0 && scale.x > 0) {
-      flipHorizontally();
-    } else if (direccion.x > 0 && scale.x < 0) {
-      flipHorizontally();
-    }
+add(
+CircleHitbox(
+radius: radio,
+anchor: Anchor.center,
+position: Vector2.zero(),
+),
+);
+}
 
-    if (position.distanceTo(posicionJugador) <= radio + 16.0) {
-      game.jugador.recibirDanio(danio * dt);
-    }
-  }
+Future<SpriteAnimation> _cargarAnimacion(
+String path,
+int cantidadFrames,
+double stepTime,
+) async {
+final image = await game.images.load(path);
 
-  @override
-  void render(Canvas canvas) {
-    if (_spritesCargados) {
-      super.render(canvas);
-    } else {
-      Color colorEntidad;
-      switch (tipo) {
-        case TipoMonstruo.limo:
-        case TipoMonstruo.slime:
-          colorEntidad = const Color(0xFF00E676);
-          break;
-        case TipoMonstruo.lobo:
-          colorEntidad = const Color(0xFFFF9100);
-          break;
-        case TipoMonstruo.esqueleto:
-          colorEntidad = const Color(0xFFECEFF1);
-          break;
-        case TipoMonstruo.miniGolem:
-          colorEntidad = const Color(0xFF8D6E63);
-          break;
-      }
+final spriteSheet = SpriteSheet(
+image: image,
+srcSize: _tamanoFrame,
+);
 
-      if (current == EstadoEnemigo.muriendo) {
-        final progreso = (_timerMuerteFallback / _duracionMuerteFallback).clamp(0.0, 1.0);
-        canvas.drawCircle(
-          Offset(size.x / 2, size.y / 2),
-          radio * (1.0 - progreso),
-          Paint()..color = Colors.white.withValues(alpha: 1.0 - progreso),
-        );
-        return;
-      }
+return spriteSheet.createAnimation(
+row: 0,
+stepTime: stepTime,
+to: cantidadFrames,
+);
+}
 
-      canvas.drawCircle(
-        Offset(size.x / 2, size.y / 2),
-        radio,
-        Paint()..color = colorEntidad,
-      );
+@override
+void update(double dt) {
+super.update(dt);
 
-      if (vidaActual < vidaMax) {
-        const anchoBarra = 24.0;
-        const altoBarra = 3.0;
-        final x = (size.x - anchoBarra) / 2;
-        canvas.drawRect(
-          Rect.fromLTWH(x, -6, anchoBarra, altoBarra),
-          Paint()..color = Colors.black54,
-        );
-        canvas.drawRect(
-          Rect.fromLTWH(x, -6, anchoBarra * (vidaActual / vidaMax).clamp(0.0, 1.0), altoBarra),
-          Paint()..color = const Color(0xFF00E676),
-        );
-      }
-    }
-  }
+if (!estadoJuego.enJuego ||
+estadoJuego.enPausa ||
+estadoJuego.finPartida) {
+return;
+}
 
-  void recibirDanio(double cantidad) {
-    if (current == EstadoEnemigo.muriendo) return;
-    vidaActual -= cantidad;
-    if (vidaActual <= 0) {
-      _activarMuerte();
-    }
-  }
+if (current == EstadoEnemigo.muriendo) {
+if (animationTicker?.done() ?? false) {
+removeFromParent();
+}
+return;
+}
 
-  void _activarMuerte() {
-    current = EstadoEnemigo.muriendo;
-    children.whereType<CircleHitbox>().forEach((hitbox) => hitbox.removeFromParent());
+final posicionJugador = game.jugador.position;
+final direccion = (posicionJugador - position).normalized();
 
-    final subioNivel = estadoJuego.sumarXp(xpOtorgada);
-    if (subioNivel) {
-      game.activarSubidaNivel();
-    }
+position.add(direccion * velocidad * dt);
 
-    game.mundo.add(
-      Diamante(
-        estadoJuego: estadoJuego,
-        posicionInicial: position.clone(),
-      ),
-    );
-  }
+if (direccion.x < 0 && scale.x > 0) {
+flipHorizontally();
+} else if (direccion.x > 0 && scale.x < 0) {
+flipHorizontally();
+}
+
+if (position.distanceTo(posicionJugador) <= radio + 16.0) {
+game.jugador.recibirDanio(danio * dt);
+}
+}
+
+@override
+void render(Canvas canvas) {
+super.render(canvas);
+
+if (vidaActual < vidaMax) {
+const anchoBarra = 24.0;
+const altoBarra = 3.0;
+final x = (size.x - anchoBarra) / 2;
+
+canvas.drawRect(
+Rect.fromLTWH(x, -6, anchoBarra, altoBarra),
+Paint()..color = Colors.black54,
+);
+
+canvas.drawRect(
+Rect.fromLTWH(
+x,
+-6,
+anchoBarra *
+(vidaActual / vidaMax).clamp(0.0, 1.0),
+altoBarra,
+),
+Paint()..color = const Color(0xFF00E676),
+);
+}
+}
+
+void recibirDanio(double cantidad) {
+if (current == EstadoEnemigo.muriendo) {
+return;
+}
+
+vidaActual -= cantidad;
+
+if (vidaActual <= 0) {
+_activarMuerte();
+}
+}
+
+void _activarMuerte() {
+current = EstadoEnemigo.muriendo;
+
+children.whereType<CircleHitbox>().forEach((hitbox) {
+hitbox.removeFromParent();
+});
+
+final subioNivel = estadoJuego.sumarXp(xpOtorgada);
+
+if (subioNivel) {
+game.activarSubidaNivel();
+}
+
+game.mundo.add(
+Diamante(
+estadoJuego: estadoJuego,
+posicionInicial: position.clone(),
+),
+);
+
+game.respawnEnemigoTrasMuerte();
+}
 }

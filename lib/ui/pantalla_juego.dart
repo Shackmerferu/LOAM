@@ -5,6 +5,7 @@ import '../core/constantes.dart';
 import '../estado/estado_juego.dart';
 import '../juego/juego_supervivencia.dart';
 import 'overlays/modal_anuncio.dart';
+import 'overlays/modal_game_over.dart';
 import 'overlays/modal_subir_nivel.dart';
 import 'overlays/modal_tienda.dart';
 import 'widgets/cabecera_juego.dart';
@@ -30,19 +31,19 @@ class _PantallaJuegoState extends State<PantallaJuego> {
   Widget build(BuildContext context) {
     final estado = context.watch<EstadoJuego>();
 
-    if (estado.finPartida && !_juego.overlays.isActive('ModalAnuncio')) {
+    if (estado.finPartida && !_juego.overlays.isActive('GameOver')) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        _juego.overlays.add('ModalAnuncio');
+        _juego.overlays.add('GameOver');
       });
     }
 
     return Scaffold(
       backgroundColor: estado.modoOscuro ? GameConstants.fondoOscuro : GameConstants.fondoClaro,
       body: SafeArea(
-        child: Column(
+        child: Stack(
           children: [
-            CabeceraJuego(estadoJuego: estado),
-            Expanded(
+            // 1. El juego ocupa todo el fondo
+            Positioned.fill(
               child: GameWidget<JuegoSupervivencia>(
                 game: _juego,
                 overlayBuilderMap: {
@@ -52,10 +53,25 @@ class _PantallaJuegoState extends State<PantallaJuego> {
                       ModalTienda(estadoJuego: estado, juego: game),
                   'ModalAnuncio': (ctx, game) =>
                       ModalAnuncio(estadoJuego: estado, juego: game),
+                  'GameOver': (ctx, game) =>
+                      ModalGameOver(estadoJuego: estado, juego: game),
                 },
               ),
             ),
-            _construirBotoneraExterna(estado),
+            // 2. Cabecera flotante arriba
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: CabeceraJuego(estadoJuego: estado),
+            ),
+            // 3. Botonera flotante abajo
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: _construirBotoneraExterna(estado),
+            ),
           ],
         ),
       ),
@@ -67,14 +83,17 @@ class _PantallaJuegoState extends State<PantallaJuego> {
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      color: colorFondo,
+      color: colorFondo.withValues(alpha: 0.92),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           ElevatedButton.icon(
             icon: const Icon(Icons.play_arrow),
             label: const Text('Iniciar'),
-            onPressed: estado.enJuego ? null : () => estado.iniciarPartida(),
+            onPressed: estado.enJuego ? null : () {
+              debugPrint('[DEBUG_UI] Botón Iniciar presionado');
+              estado.iniciarPartida();
+            },
           ),
           ElevatedButton.icon(
             icon: Icon(estado.enPausa ? Icons.play_arrow : Icons.pause),
@@ -83,8 +102,10 @@ class _PantallaJuegoState extends State<PantallaJuego> {
                 ? null
                 : () {
               if (estado.enPausa) {
+                debugPrint('[DEBUG_UI] Botón Reanudar presionado');
                 estado.reanudarPartida();
               } else {
+                debugPrint('[DEBUG_UI] Botón Pausar presionado');
                 estado.pausarPartida();
               }
             },
@@ -94,8 +115,10 @@ class _PantallaJuegoState extends State<PantallaJuego> {
             label: const Text('Reiniciar'),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent.shade700),
             onPressed: () {
+              debugPrint('[DEBUG_UI] Botón Reiniciar presionado');
               _juego.overlays.clear();
               estado.reiniciarPartida();
+              _juego.reiniciar();
             },
           ),
         ],

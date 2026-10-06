@@ -1,13 +1,16 @@
 import 'package:flame/components.dart';
+import 'package:flutter/material.dart';
 import '../../estado/estado_juego.dart';
 import '../juego_supervivencia.dart';
 
-class Diamante extends SpriteAnimationComponent with HasGameReference<JuegoSupervivencia> {
+class Diamante extends SpriteComponent with HasGameReference<JuegoSupervivencia> {
   final EstadoJuego estadoJuego;
 
   static const double radioIman = 140.0;
   static const double radioRecoleccion = 24.0;
   static const double velocidadAtraccion = 320.0;
+
+  bool _spritesCargados = false;
 
   Diamante({
     required this.estadoJuego,
@@ -22,14 +25,28 @@ class Diamante extends SpriteAnimationComponent with HasGameReference<JuegoSuper
   Future<void> onLoad() async {
     await super.onLoad();
 
-    animation = await game.loadSpriteAnimation(
-      'items/diamante_anim.png',
-      SpriteAnimationData.sequenced(
-        amount: 5,
-        stepTime: 0.12,
-        textureSize: Vector2(16, 16),
-      ),
-    );
+    try {
+      sprite = await game.loadSprite('items/diamante.png');
+      _spritesCargados = true;
+    } catch (_) {
+      _spritesCargados = false;
+    }
+  }
+
+  @override
+  void render(Canvas canvas) {
+    if (_spritesCargados) {
+      super.render(canvas);
+    } else {
+      final paint = Paint()..color = const Color(0xFF00E5FF);
+      final path = Path()
+        ..moveTo(size.x / 2, 0)
+        ..lineTo(size.x, size.y / 2)
+        ..lineTo(size.x / 2, size.y)
+        ..lineTo(0, size.y / 2)
+        ..close();
+      canvas.drawPath(path, paint);
+    }
   }
 
   @override

@@ -12,6 +12,7 @@ class CabeceraJuego extends StatelessWidget {
     return ListenableBuilder(
       listenable: estadoJuego,
       builder: (context, _) {
+        final isDark = estadoJuego.isDarkMode;
         final theme = Theme.of(context);
         final minutos = (estadoJuego.gameTime / 60).floor().toString().padLeft(2, '0');
         final segundos = (estadoJuego.gameTime % 60).floor().toString().padLeft(2, '0');
@@ -19,7 +20,13 @@ class CabeceraJuego extends StatelessWidget {
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           decoration: BoxDecoration(
-            color: theme.colorScheme.surface,
+            color: isDark ? const Color(0xFF1E1A2E) : Colors.white,
+            border: Border(
+              bottom: BorderSide(
+                color: isDark ? Colors.white24 : Colors.black12,
+                width: 1.5,
+              ),
+            ),
             boxShadow: const [
               BoxShadow(
                 color: Colors.black26,
@@ -38,11 +45,14 @@ class CabeceraJuego extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.person, size: 20),
+                        Icon(Icons.person, size: 20, color: isDark ? Colors.white70 : Colors.black87),
                         const SizedBox(width: 6),
                         Text(
                           estadoJuego.username,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: isDark ? Colors.white : Colors.black87,
+                          ),
                         ),
                         const SizedBox(width: 8),
                         GestureDetector(
@@ -69,8 +79,9 @@ class CabeceraJuego extends StatelessWidget {
                     ),
                     IconButton(
                       icon: Icon(
-                        estadoJuego.isDarkMode ? Icons.light_mode : Icons.dark_mode,
+                        isDark ? Icons.light_mode : Icons.dark_mode,
                         size: 20,
+                        color: isDark ? Colors.white70 : Colors.black87,
                       ),
                       onPressed: estadoJuego.toggleTheme,
                     ),
@@ -90,9 +101,10 @@ class CabeceraJuego extends StatelessWidget {
                     ),
                     Text(
                       'TIEMPO: $minutos:$segundos',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
+                        color: isDark ? Colors.white : Colors.black87,
                       ),
                     ),
                     GestureDetector(

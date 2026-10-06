@@ -58,9 +58,6 @@ class Espada extends ArmaBase {
       }
     }
   }
-      }
-    }
-  }
 }
 
 class EfectoCorteCircular extends PositionComponent {

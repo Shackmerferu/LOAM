@@ -1,5 +1,6 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flame/sprite.dart';
 import 'package:flutter/material.dart';
 import '../../core/constantes.dart';
 import '../../estado/estado_juego.dart';
@@ -12,7 +13,6 @@ class Jugador extends SpriteAnimationGroupComponent<EstadoJugador>
   final EstadoJuego estadoJuego;
   Vector2 direccionMovimiento = Vector2.zero();
   bool _estaMuerto = false;
-  bool _spritesCargados = false;
 
   double _inmunidadRestante = 0.0;
   static const double _tiempoInmunidad = 0.5;
@@ -30,74 +30,35 @@ class Jugador extends SpriteAnimationGroupComponent<EstadoJugador>
 
   @override
   Future<void> onLoad() async {
-    await super.onLoad();
-    position = Vector2.zero();
+    super.onLoad();
+    position = game.size.isZero() ? Vector2(200, 400) : game.size / 2;
+    debugPrint('[DEBUG_JUGADOR] onLoad() iniciado, posición inicial: $position');
 
-    try {
-      final animQuieto = await game.loadSpriteAnimation(
-        'personajes/jugador_quieto.png',
-        SpriteAnimationData.sequenced(
-          amount: 4,
-          stepTime: 0.2,
-          textureSize: Vector2(32, 32),
-        ),
-      );
+    animations = {
+      EstadoJugador.quieto: await _cargarAnimacion('personajes/jugador_quieto.png', 4, 0.2),
+      EstadoJugador.caminando: await _cargarAnimacion('personajes/jugador_caminar.png', 6, 0.12),
+      EstadoJugador.danio: await _cargarAnimacion('personajes/jugador_herido.png', 4, 0.08),
+      EstadoJugador.muerte: await _cargarAnimacion('personajes/jugador_muerte.png', 4, 0.1),
+      EstadoJugador.subirNivel: await _cargarAnimacion('personajes/jugador_levelup.png', 4, 0.1),
+    };
 
-      final animCaminar = await game.loadSpriteAnimation(
-        'personajes/jugador_caminar.png',
-        SpriteAnimationData.sequenced(
-          amount: 6,
-          stepTime: 0.12,
-          textureSize: Vector2(32, 32),
-        ),
-      );
-
-      final animDanio = await game.loadSpriteAnimation(
-        'personajes/jugador_quieto.png',
-        SpriteAnimationData.sequenced(
-          amount: 4,
-          stepTime: 0.08,
-          textureSize: Vector2(32, 32),
-          loop: false,
-        ),
-      );
-
-      final animMuerte = await game.loadSpriteAnimation(
-        'personajes/jugador_quieto.png',
-        SpriteAnimationData.sequenced(
-          amount: 4,
-          stepTime: 0.1,
-          textureSize: Vector2(32, 32),
-          loop: false,
-        ),
-      );
-
-      final animSubirNivel = await game.loadSpriteAnimation(
-        'personajes/jugador_quieto.png',
-        SpriteAnimationData.sequenced(
-          amount: 4,
-          stepTime: 0.1,
-          textureSize: Vector2(32, 32),
-          loop: false,
-        ),
-      );
-
-      animations = {
-        EstadoJugador.quieto: animQuieto,
-        EstadoJugador.caminando: animCaminar,
-        EstadoJugador.danio: animDanio,
-        EstadoJugador.muerte: animMuerte,
-        EstadoJugador.subirNivel: animSubirNivel,
-      };
-
-      current = EstadoJugador.quieto;
-      _spritesCargados = true;
-    } catch (_) {
-      _spritesCargados = false;
-      current = EstadoJugador.quieto;
-    }
-
+    current = EstadoJugador.quieto;
     add(CircleHitbox(radius: 16.0, anchor: Anchor.center, position: size / 2));
+    debugPrint('[DEBUG_JUGADOR] Sprites del jugador cargados correctamente');
+  }
+
+  Future<SpriteAnimation> _cargarAnimacion(String path, int amount, double stepTime) async {
+    final image = await game.images.load(path);
+    final spriteSheet = SpriteSheet(image: image, srcSize: Vector2(32, 32));
+    return spriteSheet.createAnimation(row: 0, stepTime: stepTime, to: amount);
+  }
+
+  @override
+  void onGameResize(Vector2 size) {
+    super.onGameResize(size);
+    if (position.isZero()) {
+      position = size / 2;
+    }
   }
 
   @override
@@ -116,14 +77,14 @@ class Jugador extends SpriteAnimationGroupComponent<EstadoJugador>
       _inmunidadRestante -= dt;
     }
 
-    if (_spritesCargados && (current == EstadoJugador.danio || current == EstadoJugador.subirNivel)) {
+    if (current == EstadoJugador.danio || current == EstadoJugador.subirNivel) {
       if (animationTicker?.done() ?? false) {
         current = EstadoJugador.quieto;
       }
     }
 
     if (!direccionMovimiento.isZero()) {
-      if (_spritesCargados && current != EstadoJugador.danio) {
+      if (current != EstadoJugador.danio) {
         current = EstadoJugador.caminando;
       }
       position.add(direccionMovimiento.normalized() * estadoJuego.velocidadMovimiento * dt);
@@ -134,7 +95,7 @@ class Jugador extends SpriteAnimationGroupComponent<EstadoJugador>
         flipHorizontally();
       }
     } else {
-      if (_spritesCargados && current != EstadoJugador.danio) {
+      if (current != EstadoJugador.danio) {
         current = EstadoJugador.quieto;
       }
     }
@@ -148,13 +109,7 @@ class Jugador extends SpriteAnimationGroupComponent<EstadoJugador>
       return;
     }
 
-    if (_spritesCargados) {
-      super.render(canvas);
-    } else {
-      final centro = Offset(size.x / 2, size.y / 2);
-      canvas.drawCircle(centro, 18.0, Paint()..color = const Color(0xFF6200EE));
-      canvas.drawCircle(centro, 10.0, Paint()..color = const Color(0xFF00E5FF));
-    }
+    super.render(canvas);
 
     const anchoBarra = 36.0;
     const altoBarra = 4.0;
@@ -188,7 +143,7 @@ class Jugador extends SpriteAnimationGroupComponent<EstadoJugador>
 
     if (estadoJuego.vidaActual <= 0) {
       _morir();
-    } else if (_spritesCargados) {
+    } else {
       current = EstadoJugador.danio;
       animationTicker?.reset();
     }
@@ -196,18 +151,14 @@ class Jugador extends SpriteAnimationGroupComponent<EstadoJugador>
 
   void animarSubidaNivel() {
     if (_estaMuerto) return;
-    if (_spritesCargados) {
-      current = EstadoJugador.subirNivel;
-      animationTicker?.reset();
-    }
+    current = EstadoJugador.subirNivel;
+    animationTicker?.reset();
   }
 
   void _morir() {
     _estaMuerto = true;
-    if (_spritesCargados) {
-      current = EstadoJugador.muerte;
-      animationTicker?.reset();
-    }
+    current = EstadoJugador.muerte;
+    animationTicker?.reset();
     children.whereType<CircleHitbox>().forEach((h) => h.removeFromParent());
   }
 }
