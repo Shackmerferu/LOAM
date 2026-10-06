@@ -23,7 +23,7 @@ class Arco extends ArmaBase {
   @override
   void ejecutarAtaque() {
     final jugador = game.jugador;
-    final enemigos = game.children.whereType<Enemigo>().toList();
+    final enemigos = game.world.children.whereType<Enemigo>().toList();
 
     Vector2 direccionBase = Vector2(1, 0);
     if (enemigos.isNotEmpty) {
@@ -41,7 +41,7 @@ class Arco extends ArmaBase {
         final anguloFinal = anguloBase + desfase;
         final dir = Vector2(cos(anguloFinal), sin(anguloFinal));
 
-        game.add(
+        game.world.add(
           ProyectilFlecha(
             posicionInicial: jugador.position.clone(),
             direccion: dir,
@@ -56,7 +56,7 @@ class Arco extends ArmaBase {
         final anguloFinal = anguloBase + desfase;
         final dir = Vector2(cos(anguloFinal), sin(anguloFinal));
 
-        game.add(
+        game.world.add(
           ProyectilFlecha(
             posicionInicial: jugador.position.clone(),
             direccion: dir,

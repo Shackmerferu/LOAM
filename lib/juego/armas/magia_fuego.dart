@@ -17,7 +17,7 @@ class MagiaFuego extends ArmaBase {
   @override
   void ejecutarAtaque() {
     final jugador = game.jugador;
-    final enemigos = game.children.whereType<Enemigo>().toList();
+    final enemigos = game.world.children.whereType<Enemigo>().toList();
 
     Vector2 direccion = Vector2(0, -1);
     if (enemigos.isNotEmpty) {
@@ -28,7 +28,7 @@ class MagiaFuego extends ArmaBase {
     }
 
     if (!estaMejorada) {
-      game.add(
+      game.world.add(
         ProyectilBolaFuego(
           posicionInicial: jugador.position.clone(),
           direccion: direccion,
@@ -36,7 +36,7 @@ class MagiaFuego extends ArmaBase {
         ),
       );
     } else {
-      game.add(
+      game.world.add(
         EfectoLlamaradaContinua(
           posicionOrigen: jugador.position.clone(),
           direccion: direccion,

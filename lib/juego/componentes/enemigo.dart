@@ -1,5 +1,6 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flutter/material.dart';
 import '../../estado/estado_juego.dart';
 import '../juego_supervivencia.dart';
 import 'diamante.dart';
@@ -18,6 +19,10 @@ class Enemigo extends SpriteAnimationGroupComponent<EstadoEnemigo>
   late double velocidad;
   late double danio;
   late double xpOtorgada;
+
+  bool _spritesCargados = false;
+  double _timerMuerteFallback = 0.0;
+  static const double _duracionMuerteFallback = 0.35;
 
   double get radio => size.x * 0.4;
 
@@ -69,31 +74,38 @@ class Enemigo extends SpriteAnimationGroupComponent<EstadoEnemigo>
   Future<void> onLoad() async {
     await super.onLoad();
 
-    final animCaminar = await game.loadSpriteAnimation(
-      'monstruos/${tipo.name}_caminar.png',
-      SpriteAnimationData.sequenced(
-        amount: 4,
-        stepTime: 0.15,
-        textureSize: Vector2(32, 32),
-      ),
-    );
+    try {
+      final animCaminar = await game.loadSpriteAnimation(
+        'monstruos/${tipo.name}_caminar.png',
+        SpriteAnimationData.sequenced(
+          amount: 4,
+          stepTime: 0.15,
+          textureSize: Vector2(32, 32),
+        ),
+      );
 
-    final animMuerte = await game.loadSpriteAnimation(
-      'monstruos/${tipo.name}_muerte.png',
-      SpriteAnimationData.sequenced(
-        amount: 6,
-        stepTime: 0.08,
-        textureSize: Vector2(32, 32),
-        loop: false,
-      ),
-    );
+      final animMuerte = await game.loadSpriteAnimation(
+        'monstruos/${tipo.name}_muerte.png',
+        SpriteAnimationData.sequenced(
+          amount: 6,
+          stepTime: 0.08,
+          textureSize: Vector2(32, 32),
+          loop: false,
+        ),
+      );
 
-    animations = {
-      EstadoEnemigo.caminando: animCaminar,
-      EstadoEnemigo.muriendo: animMuerte,
-    };
+      animations = {
+        EstadoEnemigo.caminando: animCaminar,
+        EstadoEnemigo.muriendo: animMuerte,
+      };
 
-    current = EstadoEnemigo.caminando;
+      current = EstadoEnemigo.caminando;
+      _spritesCargados = true;
+    } catch (_) {
+      _spritesCargados = false;
+      current = EstadoEnemigo.caminando;
+    }
+
     add(CircleHitbox(radius: radio, anchor: Anchor.center, position: size / 2));
   }
 
@@ -103,8 +115,15 @@ class Enemigo extends SpriteAnimationGroupComponent<EstadoEnemigo>
     if (!estadoJuego.enJuego || estadoJuego.enPausa || estadoJuego.finPartida) return;
 
     if (current == EstadoEnemigo.muriendo) {
-      if (animationTicker?.done() ?? false) {
-        removeFromParent();
+      if (_spritesCargados) {
+        if (animationTicker?.done() ?? false) {
+          removeFromParent();
+        }
+      } else {
+        _timerMuerteFallback += dt;
+        if (_timerMuerteFallback >= _duracionMuerteFallback) {
+          removeFromParent();
+        }
       }
       return;
     }
@@ -121,6 +140,60 @@ class Enemigo extends SpriteAnimationGroupComponent<EstadoEnemigo>
 
     if (position.distanceTo(posicionJugador) <= radio + 16.0) {
       game.jugador.recibirDanio(danio * dt);
+    }
+  }
+
+  @override
+  void render(Canvas canvas) {
+    if (_spritesCargados) {
+      super.render(canvas);
+    } else {
+      Color colorEntidad;
+      switch (tipo) {
+        case TipoMonstruo.limo:
+        case TipoMonstruo.slime:
+          colorEntidad = const Color(0xFF00E676);
+          break;
+        case TipoMonstruo.lobo:
+          colorEntidad = const Color(0xFFFF9100);
+          break;
+        case TipoMonstruo.esqueleto:
+          colorEntidad = const Color(0xFFECEFF1);
+          break;
+        case TipoMonstruo.miniGolem:
+          colorEntidad = const Color(0xFF8D6E63);
+          break;
+      }
+
+      if (current == EstadoEnemigo.muriendo) {
+        final progreso = (_timerMuerteFallback / _duracionMuerteFallback).clamp(0.0, 1.0);
+        canvas.drawCircle(
+          Offset(size.x / 2, size.y / 2),
+          radio * (1.0 - progreso),
+          Paint()..color = Colors.white.withValues(alpha: 1.0 - progreso),
+        );
+        return;
+      }
+
+      canvas.drawCircle(
+        Offset(size.x / 2, size.y / 2),
+        radio,
+        Paint()..color = colorEntidad,
+      );
+
+      if (vidaActual < vidaMax) {
+        const anchoBarra = 24.0;
+        const altoBarra = 3.0;
+        final x = (size.x - anchoBarra) / 2;
+        canvas.drawRect(
+          Rect.fromLTWH(x, -6, anchoBarra, altoBarra),
+          Paint()..color = Colors.black54,
+        );
+        canvas.drawRect(
+          Rect.fromLTWH(x, -6, anchoBarra * (vidaActual / vidaMax).clamp(0.0, 1.0), altoBarra),
+          Paint()..color = const Color(0xFF00E676),
+        );
+      }
     }
   }
 

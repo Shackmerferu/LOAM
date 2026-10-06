@@ -15,19 +15,19 @@ class EstadoJuego extends ChangeNotifier {
   String get username => usuario;
   set username(String value) {
     usuario = value;
-    notifyListeners();
+    notificarSeguro();
   }
 
   AccountType accountType = AccountType.pro;
   AccountType get tipoCuenta => accountType;
   set tipoCuenta(AccountType value) {
     accountType = value;
-    notifyListeners();
+    notificarSeguro();
   }
 
   void switchAccountType() {
     accountType = accountType == AccountType.basic ? AccountType.pro : AccountType.basic;
-    notifyListeners();
+    notificarSeguro();
   }
   void alternarTipoCuenta() => switchAccountType();
 
@@ -36,11 +36,11 @@ class EstadoJuego extends ChangeNotifier {
   bool get isDarkMode => modoOscuro;
   set isDarkMode(bool value) {
     modoOscuro = value;
-    notifyListeners();
+    notificarSeguro();
   }
   void alternarTema() {
     modoOscuro = !modoOscuro;
-    notifyListeners();
+    notificarSeguro();
   }
   void toggleTheme() => alternarTema();
 
@@ -61,24 +61,25 @@ class EstadoJuego extends ChangeNotifier {
     enPausa = false;
     finPartida = false;
     tiendaMinuto5Mostrada = false;
-    notifyListeners();
+    notificarSeguro();
   }
   void startGame() => iniciarPartida();
 
   void pausarPartida() {
     enPausa = true;
-    notifyListeners();
+    notificarSeguro();
   }
   void pauseGame() => pausarPartida();
 
   void reanudarPartida() {
     enPausa = false;
-    notifyListeners();
+    notificarSeguro();
   }
   void resumeGame() => reanudarPartida();
 
   void reiniciarPartida() {
     tiempoPartida = 0.0;
+    _ultimoSegundoNotificado = -1;
     puntaje = 0;
     nivelJugador = 1;
     xpActual = 0.0;
@@ -98,22 +99,24 @@ class EstadoJuego extends ChangeNotifier {
     enJuego = false;
     finPartida = true;
     diamantesRecolectados = max(0, diamantesRecolectados - GameConstants.penalizacionDiamantesMuerte);
-    notifyListeners();
+    notificarSeguro();
   }
 
   // Tiempos y puntaje
   double tiempoPartida = 0.0;
+  int _ultimoSegundoNotificado = -1;
+
   double get gameTime => tiempoPartida;
   set gameTime(double value) {
     tiempoPartida = value;
-    notifyListeners();
+    notificarSeguro();
   }
 
   int puntaje = 0;
   int get score => puntaje;
   set score(int value) {
     puntaje = value;
-    notifyListeners();
+    notificarSeguro();
   }
 
   // Economía
@@ -124,7 +127,7 @@ class EstadoJuego extends ChangeNotifier {
 
   void simularCompraIAP(int cantidad) {
     diamantesComprados += cantidad;
-    notifyListeners();
+    notificarSeguro();
   }
   void buyDiamonds(int amount) => simularCompraIAP(amount);
 
@@ -133,7 +136,7 @@ class EstadoJuego extends ChangeNotifier {
         _random.nextInt(GameConstants.dropMaxDiamantes - GameConstants.dropMinDiamantes + 1);
     diamantesRecolectados += ganancia;
     puntaje += 15;
-    notifyListeners();
+    notificarSeguro();
   }
 
   // Estadísticas del jugador
@@ -152,7 +155,7 @@ class EstadoJuego extends ChangeNotifier {
       vidaActual = 0;
       terminarPartida();
     } else {
-      notifyListeners();
+      notificarSeguro();
     }
   }
 
@@ -161,21 +164,21 @@ class EstadoJuego extends ChangeNotifier {
   int get swordLevel => nivelEspada;
   set swordLevel(int val) {
     nivelEspada = val;
-    notifyListeners();
+    notificarSeguro();
   }
 
   int nivelArco = 1;
   int get bowLevel => nivelArco;
   set bowLevel(int val) {
     nivelArco = val;
-    notifyListeners();
+    notificarSeguro();
   }
 
   int nivelMagia = 1;
   int get fireMagicLevel => nivelMagia;
   set fireMagicLevel(int val) {
     nivelMagia = val;
-    notifyListeners();
+    notificarSeguro();
   }
 
   final Random _random = Random();
@@ -193,7 +196,12 @@ class EstadoJuego extends ChangeNotifier {
       terminarPartida();
       return;
     }
-    notifyListeners();
+
+    final segundoActual = tiempoPartida.toInt();
+    if (segundoActual != _ultimoSegundoNotificado) {
+      _ultimoSegundoNotificado = segundoActual;
+      notificarSeguro();
+    }
   }
 
   bool sumarXp(double cantidad) {
@@ -202,10 +210,10 @@ class EstadoJuego extends ChangeNotifier {
       xpActual -= xpObjetivo;
       nivelJugador++;
       xpObjetivo = (xpObjetivo * 1.35).roundToDouble();
-      notifyListeners();
+      notificarSeguro();
       return true;
     }
-    notifyListeners();
+    notificarSeguro();
     return false;
   }
 
@@ -221,7 +229,7 @@ class EstadoJuego extends ChangeNotifier {
         if (nivelMagia < GameConstants.maxWeaponLevel) nivelMagia++;
         break;
     }
-    notifyListeners();
+    notificarSeguro();
   }
 
   void upgradeWeapon(dynamic weapon) {
@@ -252,9 +260,17 @@ class EstadoJuego extends ChangeNotifier {
     } else if (tipo == 'velocidad' || tipo == 'speed') {
       velocidadMovimiento += 25.0;
     }
-    notifyListeners();
+    notificarSeguro();
     return true;
   }
 
   bool purchaseStatUpgrade(String stat, int cost) => comprarMejoraTienda(stat, cost);
+
+  void notificarSeguro() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (hasListeners) {
+        notifyListeners();
+      }
+    });
+  }
 }

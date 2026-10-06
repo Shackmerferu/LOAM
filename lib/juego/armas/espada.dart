@@ -20,9 +20,9 @@ class Espada extends ArmaBase {
 
     if (!estaMejorada) {
       const radioCorte = 95.0;
-      game.add(EfectoCorteCircular(posicion: jugador.position.clone(), radio: radioCorte));
+      game.world.add(EfectoCorteCircular(posicion: jugador.position.clone(), radio: radioCorte));
 
-      final enemigos = game.children.whereType<Enemigo>();
+      final enemigos = game.world.children.whereType<Enemigo>();
       for (final enemigo in enemigos) {
         if (enemigo.position.distanceTo(jugador.position) <= radioCorte) {
           enemigo.recibirDanio(danioFinal);
@@ -40,7 +40,7 @@ class Espada extends ArmaBase {
         );
         final origen = jugador.position + offset;
 
-        game.add(
+        game.world.add(
           EfectoCorteDimensional(
             posicion: origen,
             angulo: angulo,
@@ -50,11 +50,14 @@ class Espada extends ArmaBase {
       }
 
       final danioEvolucionado = danioFinal * 1.8;
-      final enemigos = game.children.whereType<Enemigo>();
+      final enemigos = game.world.children.whereType<Enemigo>();
       for (final enemigo in enemigos) {
         if (enemigo.position.distanceTo(jugador.position) <= 180.0) {
           enemigo.recibirDanio(danioEvolucionado);
         }
+      }
+    }
+  }
       }
     }
   }

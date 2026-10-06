@@ -5,10 +5,13 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import '../core/constantes.dart';
 import '../estado/estado_juego.dart';
+import 'armas/arco.dart';
+import 'armas/espada.dart';
+import 'armas/magia_fuego.dart';
 import 'componentes/enemigo.dart';
 import 'componentes/jugador.dart';
 
-class FondoCuadricula extends Component with HasGameReference<JuegoSupervivencia> {
+class FondoCuadricula extends Component {
   final Paint _paintLinea = Paint()
     ..color = const Color(0xFF26203D)
     ..strokeWidth = 1.0
@@ -37,8 +40,8 @@ class FondoCuadricula extends Component with HasGameReference<JuegoSupervivencia
 class JuegoSupervivencia extends FlameGame with HasCollisionDetection, DragCallbacks {
   final EstadoJuego estadoJuego;
   late final Jugador jugador;
-  late final World mundo;
-  late final CameraComponent camara;
+
+  World get mundo => world;
 
   final Random _random = Random();
   double _timerSpawn = 0.0;
@@ -52,17 +55,38 @@ class JuegoSupervivencia extends FlameGame with HasCollisionDetection, DragCallb
   Future<void> onLoad() async {
     await super.onLoad();
 
-    mundo = World();
-    await add(mundo);
-    await mundo.add(FondoCuadricula());
+    await world.add(FondoCuadricula());
 
     jugador = Jugador(estadoJuego: estadoJuego);
-    await mundo.add(jugador);
+    await world.add(jugador);
 
-    camara = CameraComponent(world: mundo);
-    camara.viewfinder.anchor = Anchor.center;
-    camara.follow(jugador);
-    await add(camara);
+    // Integración del arsenal en el World
+    await world.add(Espada(estadoJuego: estadoJuego));
+    await world.add(Arco(estadoJuego: estadoJuego));
+    await world.add(MagiaFuego(estadoJuego: estadoJuego));
+
+    camera.viewfinder.anchor = Anchor.center;
+    camera.follow(jugador);
+
+    if (!estadoJuego.enJuego) {
+      estadoJuego.iniciarPartida();
+    }
+
+    _spawnOleadaInicial();
+  }
+
+  void _spawnOleadaInicial() {
+    for (int i = 0; i < 4; i++) {
+      final angulo = (i / 4) * 2 * pi;
+      const double distancia = 380.0;
+      final spawn = Vector2(cos(angulo) * distancia, sin(angulo) * distancia);
+
+      world.add(Enemigo(
+        tipo: TipoMonstruo.limo,
+        estadoJuego: estadoJuego,
+        posicionInicial: spawn,
+      ));
+    }
   }
 
   @override
@@ -93,24 +117,24 @@ class JuegoSupervivencia extends FlameGame with HasCollisionDetection, DragCallb
     }
 
     _timerSpawn += dt;
-    if (_timerSpawn >= 0.6) {
+    if (_timerSpawn >= 0.8) {
       _timerSpawn = 0.0;
       _regularHorda();
     }
   }
 
   void _regularHorda() {
-    final cantidadActual = mundo.children.whereType<Enemigo>().length;
+    final cantidadActual = world.children.whereType<Enemigo>().length;
     if (cantidadActual >= GameConstants.maxEnemigos) return;
 
     final faltantes = GameConstants.minEnemigos - cantidadActual;
-    final porGenerar = faltantes > 0 ? faltantes : 1;
+    final porGenerar = faltantes > 0 ? faltantes.clamp(1, 3) : 1;
 
     for (int i = 0; i < porGenerar; i++) {
-      if (mundo.children.whereType<Enemigo>().length >= GameConstants.maxEnemigos) break;
+      if (world.children.whereType<Enemigo>().length >= GameConstants.maxEnemigos) break;
 
       final angulo = _random.nextDouble() * 2 * pi;
-      const double distancia = 420.0;
+      const double distancia = 400.0;
       final spawn = Vector2(
         jugador.position.x + cos(angulo) * distancia,
         jugador.position.y + sin(angulo) * distancia,
@@ -124,7 +148,7 @@ class JuegoSupervivencia extends FlameGame with HasCollisionDetection, DragCallb
         tipo = TipoMonstruo.esqueleto;
       }
 
-      mundo.add(Enemigo(
+      world.add(Enemigo(
         tipo: tipo,
         estadoJuego: estadoJuego,
         posicionInicial: spawn,
@@ -149,6 +173,8 @@ class JuegoSupervivencia extends FlameGame with HasCollisionDetection, DragCallb
 
   void reiniciar() {
     overlays.clear();
+    world.children.whereType<Enemigo>().forEach((e) => e.removeFromParent());
     estadoJuego.reiniciarPartida();
+    _spawnOleadaInicial();
   }
 }
