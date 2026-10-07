@@ -20,6 +20,13 @@ class GameConstants {
   static const int dropMinDiamantes = 10;
   static const int dropMaxDiamantes = 100;
   static const int penalizacionDiamantesMuerte = 50;
+  static const int costoMejoraDanio = 150;
+  static const int costoMejoraVelocidad = 100;
+  static const int costoMejoraSalud = 120;
+  static const int multiplicadorCostoMejora = 3;
+  static const double mejoraDanioPorCompra = 0.15;
+  static const double mejoraVelocidadPorCompra = 15.0;
+  static const double mejoraSaludPorCompra = 15.0;
 
   // Paleta de colores para la UI
   static const Color fondoOscuro = Color(0xFF110E1B);

@@ -120,8 +120,12 @@ class EstadoJuego extends ChangeNotifier {
     xpObjetivo = 100.0;
     vidaMax = 150.0;
     vidaActual = 150.0;
+    velocidadMovimiento = 150.0;
     asignarArmaInicialAleatoria();
     bonusDanioComprado = 0.0;
+    mejorasDanioCompradas = 0;
+    mejorasVelocidadCompradas = 0;
+    mejorasSaludCompradas = 0;
     tiendaMinuto5Mostrada = false;
     finPartida = false;
     iniciarPartida();
@@ -196,6 +200,9 @@ class EstadoJuego extends ChangeNotifier {
   double vidaActual = 150.0;
   double velocidadMovimiento = 150.0;
   double bonusDanioComprado = 0.0;
+  int mejorasDanioCompradas = 0;
+  int mejorasVelocidadCompradas = 0;
+  int mejorasSaludCompradas = 0;
 
   double get damageMultiplier =>
       1.0 +
@@ -305,24 +312,70 @@ class EstadoJuego extends ChangeNotifier {
     }
   }
 
-  bool comprarMejoraTienda(String tipo, int costo) {
-    if (totalDiamantes < costo) return false;
+  int costoMejora(String tipo) {
+    final normalizado = tipo.toLowerCase();
+    late final int costoBase;
+    late final int compras;
 
-    if (diamantesRecolectados >= costo) {
-      diamantesRecolectados -= costo;
+    if (normalizado == 'damage' || normalizado == 'dano' || normalizado == 'daño') {
+      costoBase = GameConstants.costoMejoraDanio;
+      compras = mejorasDanioCompradas;
+    } else if (normalizado == 'velocidad' || normalizado == 'speed') {
+      costoBase = GameConstants.costoMejoraVelocidad;
+      compras = mejorasVelocidadCompradas;
+    } else if (normalizado == 'vida' || normalizado == 'health') {
+      costoBase = GameConstants.costoMejoraSalud;
+      compras = mejorasSaludCompradas;
     } else {
-      final restante = costo - diamantesRecolectados;
+      throw ArgumentError.value(tipo, 'tipo', 'Tipo de mejora desconocido');
+    }
+
+    var costo = costoBase;
+    for (var i = 0; i < compras; i++) {
+      if (costo > 0x7fffffffffffffff ~/ GameConstants.multiplicadorCostoMejora) {
+        return 0x7fffffffffffffff;
+      }
+      costo *= GameConstants.multiplicadorCostoMejora;
+    }
+    return costo;
+  }
+
+  bool comprarMejoraTienda(String tipo, int costo) {
+    final normalizado = tipo.toLowerCase();
+    if (normalizado != 'damage' &&
+        normalizado != 'dano' &&
+        normalizado != 'daño' &&
+        normalizado != 'velocidad' &&
+        normalizado != 'speed' &&
+        normalizado != 'vida' &&
+        normalizado != 'health') {
+      return false;
+    }
+
+    final costoActual = costoMejora(normalizado);
+    if (costo != costoActual || totalDiamantes < costoActual) return false;
+
+    if (diamantesRecolectados >= costoActual) {
+      diamantesRecolectados -= costoActual;
+    } else {
+      final restante = costoActual - diamantesRecolectados;
       diamantesRecolectados = 0;
       diamantesComprados -= restante;
     }
 
-    if (tipo == 'vida' || tipo == 'health') {
-      vidaMax += 30.0;
-      vidaActual = (vidaActual + 30.0).clamp(0.0, vidaMax);
-    } else if (tipo == 'velocidad' || tipo == 'speed') {
-      velocidadMovimiento += 25.0;
-    } else if (tipo == 'damage' || tipo == 'dano') {
-      bonusDanioComprado += 0.25;
+    if (normalizado == 'vida' || normalizado == 'health') {
+      vidaMax += GameConstants.mejoraSaludPorCompra;
+      vidaActual = (vidaActual + GameConstants.mejoraSaludPorCompra).clamp(
+        0.0,
+        vidaMax,
+      );
+      mejorasSaludCompradas++;
+    } else if (normalizado == 'velocidad' || normalizado == 'speed') {
+      velocidadMovimiento += GameConstants.mejoraVelocidadPorCompra;
+      mejorasVelocidadCompradas++;
+    } else {
+      bonusDanioComprado += GameConstants.mejoraDanioPorCompra;
+      mejorasDanioCompradas++;
     }
     notificarSeguro();
     return true;

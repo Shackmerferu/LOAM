@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../estado/estado_juego.dart';
 import '../../juego/juego_supervivencia.dart';
 
@@ -19,7 +20,8 @@ class ModalTienda extends StatefulWidget {
 class _ModalTiendaState extends State<ModalTienda> {
   String? mensajeError;
 
-  void _intentarCompra(String tipo, int costo) {
+  void _intentarCompra(String tipo) {
+    final costo = widget.estadoJuego.costoMejora(tipo);
     final exito = widget.estadoJuego.purchaseStatUpgrade(tipo, costo);
     if (!exito) {
       setState(() {
@@ -96,30 +98,30 @@ class _ModalTiendaState extends State<ModalTienda> {
               ],
               const SizedBox(height: 16),
               _construirOpcionCompra(
-                titulo: '+25% Daño Global',
+                titulo: '+15% Daño Global',
                 descripcion: 'Incrementa la potencia de todas las armas.',
-                costo: 150,
+                costo: estado.costoMejora('damage'),
                 icono: Icons.flash_on,
                 colorIcono: Colors.amberAccent,
-                onComprar: () => _intentarCompra('damage', 150),
+                onComprar: () => _intentarCompra('damage'),
               ),
               const SizedBox(height: 10),
               _construirOpcionCompra(
-                titulo: '+25 Velocidad de Movimiento',
+                titulo: '+15 Velocidad de Movimiento',
                 descripcion: 'Facilita esquivar ataques en áreas reducidas.',
-                costo: 100,
+                costo: estado.costoMejora('speed'),
                 icono: Icons.directions_run,
                 colorIcono: Colors.greenAccent,
-                onComprar: () => _intentarCompra('speed', 100),
+                onComprar: () => _intentarCompra('speed'),
               ),
               const SizedBox(height: 10),
               _construirOpcionCompra(
-                titulo: '+20 Salud Máxima y Curación',
+                titulo: '+15 Salud Máxima y Curación',
                 descripcion: 'Aumenta el límite de vida y restaura salud.',
-                costo: 120,
+                costo: estado.costoMejora('health'),
                 icono: Icons.favorite,
                 colorIcono: Colors.redAccent,
-                onComprar: () => _intentarCompra('health', 120),
+                onComprar: () => _intentarCompra('health'),
               ),
               const SizedBox(height: 20),
               SizedBox(
