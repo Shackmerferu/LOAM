@@ -256,10 +256,11 @@ class EfectoLlamaradaContinua
     final jugador = game.jugador;
 
     // Sigue el control del jugador (touchpad), sin priorizar enemigos.
-    _direccion = jugador.ultimaDireccion;
+    _direccion = jugador.ultimaDireccion.normalized();
 
-    // La llamarada inicia al fondo del sprite del jugador (offset x, y/2).
-    position = jugador.position + Vector2(0, jugador.size.y / 2);
+    // Base de la llamarada: 16 px fuera de la circunferencia del hitbox
+    // (radioBaseArmas), en la dirección del touchpad. Mismo ancla que el arco.
+    position = jugador.position + _direccion * jugador.radioBaseArmas;
     angle = atan2(_direccion.y, _direccion.x);
   }
 

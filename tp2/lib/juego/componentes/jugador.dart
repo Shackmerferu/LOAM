@@ -26,6 +26,16 @@ class Jugador extends SpriteAnimationGroupComponent<EstadoJugador>
     anchor: Anchor.center,
   );
 
+  /// Radio del hitbox circular del jugador (r = 16).
+  double get radioHitbox => 16.0;
+
+  /// Separación mínima desde la circunferencia del hitbox hasta la base de
+  /// las armas (llamarada y arco), válida para cualquier dirección.
+  static const double separacionBaseArmas = 16.0;
+
+  /// Radio donde se anclan las armas: hitbox + 16 px = 32 px desde el centro.
+  double get radioBaseArmas => radioHitbox + separacionBaseArmas;
+
   void mover(Vector2 delta) {
     if (_estaMuerto) return;
     direccionMovimiento = delta;
@@ -49,7 +59,7 @@ class Jugador extends SpriteAnimationGroupComponent<EstadoJugador>
     };
 
     current = EstadoJugador.quieto;
-    add(CircleHitbox(radius: 16.0, anchor: Anchor.center, position: size / 2));
+    add(CircleHitbox(radius: radioHitbox, anchor: Anchor.center, position: size / 2));
     debugPrint('[DEBUG_JUGADOR] Sprites del jugador cargados correctamente');
   }
 
