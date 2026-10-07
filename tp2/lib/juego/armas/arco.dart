@@ -1,10 +1,15 @@
 import 'dart:math';
 import 'package:flame/components.dart';
-import 'package:flutter/material.dart';
+import 'package:flame/sprite.dart';
 import '../componentes/enemigo.dart';
+import '../juego_supervivencia.dart';
 import 'arma_base.dart';
 
 class Arco extends ArmaBase {
+  SpriteComponent? _visual;
+  String? _rutaVisual;
+  Vector2 _dirActual = Vector2(1, 0);
+
   Arco({required super.estadoJuego})
       : super(
     intervaloAtaque: 1.0,
@@ -15,15 +20,54 @@ class Arco extends ArmaBase {
   int get nivel => estadoJuego.bowLevel;
 
   @override
+  Future<void> onLoad() async {
+    await super.onLoad();
+
+    final ruta = estaMejorada ? 'armas/ballesta.png' : 'armas/arco.png';
+    _rutaVisual = ruta;
+    _visual = SpriteComponent(
+      sprite: Sprite(game.images.fromCache(ruta)),
+      size: Vector2.all(52.0),
+      anchor: Anchor.center,
+      priority: 10,
+    );
+    add(_visual!);
+  }
+
+  @override
   void update(double dt) {
     intervaloAtaque = estaMejorada ? 0.45 : 1.0;
     super.update(dt);
+    _actualizarVisual();
+  }
+
+  void _actualizarVisual() {
+    final visual = _visual;
+    if (visual == null) return;
+
+    final jugador = game.jugador;
+
+    // El arco queda anclado a la derecha del sprite y gira con el touchpad,
+    // igual que la llamarada.
+    _dirActual = jugador.ultimaDireccion;
+    final ladoDerecho = jugador.scale.x.sign;
+    visual.position = jugador.position + Vector2(30.0 * ladoDerecho, 0.0);
+    visual.angle = atan2(_dirActual.y, _dirActual.x) + pi / 4;
+
+    final ruta = estaMejorada ? 'armas/ballesta.png' : 'armas/arco.png';
+    if (_rutaVisual != ruta) {
+      _rutaVisual = ruta;
+      visual.sprite = Sprite(game.images.fromCache(ruta));
+    }
   }
 
   @override
   void ejecutarAtaque() {
     final jugador = game.jugador;
-    final enemigos = game.world.children.whereType<Enemigo>().toList();
+    final enemigos = game.world.children
+        .whereType<Enemigo>()
+        .where((e) => e.estaVivo)
+        .toList();
 
     Vector2 direccionBase = Vector2(1, 0);
     if (enemigos.isNotEmpty) {
@@ -69,7 +113,8 @@ class Arco extends ArmaBase {
   }
 }
 
-class ProyectilFlecha extends PositionComponent {
+class ProyectilFlecha extends SpriteComponent
+    with HasGameReference<JuegoSupervivencia> {
   final Vector2 direccion;
   final double danio;
   final bool esExplosiva;
@@ -85,15 +130,32 @@ class ProyectilFlecha extends PositionComponent {
     required this.esExplosiva,
   }) : super(
     position: posicionInicial,
-    size: Vector2(16.0, 4.0),
+    size: Vector2.all(esExplosiva ? 56.0 : 46.0),
     anchor: Anchor.center,
+    priority: 4,
   ) {
-    angle = atan2(direccion.y, direccion.x);
+    angle = atan2(direccion.y, direccion.x) + pi / 4;
+  }
+
+  @override
+  Future<void> onLoad() async {
+    await super.onLoad();
+    sprite = Sprite(
+      game.images.fromCache(
+        esExplosiva ? 'armas/flecha_explosiva.png' : 'armas/flecha.png',
+      ),
+    );
   }
 
   @override
   void update(double dt) {
     super.update(dt);
+
+    if (!game.estadoJuego.enJuego ||
+        game.estadoJuego.enPausa ||
+        game.estadoJuego.finPartida) {
+      return;
+    }
 
     final avance = velocidad * dt;
     position.add(direccion * avance);
@@ -101,6 +163,7 @@ class ProyectilFlecha extends PositionComponent {
 
     final enemigos = parent?.children.whereType<Enemigo>() ?? [];
     for (final enemigo in enemigos) {
+      if (!enemigo.estaVivo) continue;
       if (enemigo.position.distanceTo(position) <= enemigo.radio + 6.0) {
         _impactar(enemigo);
         return;
@@ -108,89 +171,72 @@ class ProyectilFlecha extends PositionComponent {
     }
 
     if (_distanciaRecorrida >= alcanceMaximo) {
-      if (esExplosiva) {
-        _detonarArea();
-      }
       removeFromParent();
     }
   }
 
   void _impactar(Enemigo enemigo) {
-    if (!esExplosiva) {
-      enemigo.recibirDanio(danio);
-    } else {
+    if (esExplosiva) {
       _detonarArea();
+    } else {
+      enemigo.recibirDanio(danio);
     }
     removeFromParent();
   }
 
   void _detonarArea() {
     const radioExplosion = 85.0;
-    parent?.add(EfectoExplosion(posicion: position.clone(), radio: radioExplosion));
+    parent?.add(EfectoExplosion(posicion: position.clone()));
 
     final enemigos = parent?.children.whereType<Enemigo>() ?? [];
     for (final enemigo in enemigos) {
+      if (!enemigo.estaVivo) continue;
       if (enemigo.position.distanceTo(position) <= radioExplosion) {
         enemigo.recibirDanio(danio);
       }
     }
   }
-
-  @override
-  void render(Canvas canvas) {
-    super.render(canvas);
-
-    final paint = Paint()
-      ..color = esExplosiva ? const Color(0xFFFF5722) : const Color(0xFFFFEB3B)
-      ..strokeWidth = esExplosiva ? 4.0 : 2.5
-      ..strokeCap = StrokeCap.round;
-
-    canvas.drawLine(
-      Offset(-size.x / 2, 0),
-      Offset(size.x / 2, 0),
-      paint,
-    );
-  }
 }
 
-class EfectoExplosion extends PositionComponent {
-  final double radio;
-  static const double _tiempoVida = 0.25;
-  double _progreso = 0.0;
-
-  EfectoExplosion({required Vector2 posicion, required this.radio})
+class EfectoExplosion extends SpriteAnimationComponent
+    with HasGameReference<JuegoSupervivencia> {
+  EfectoExplosion({required Vector2 posicion})
       : super(
     position: posicion,
-    size: Vector2.all(radio * 2),
+    size: Vector2(150, 190),
     anchor: Anchor.center,
+    priority: 6,
   );
 
   @override
-  void update(double dt) {
-    super.update(dt);
-    _progreso += dt / _tiempoVida;
-    if (_progreso >= 1.0) {
-      removeFromParent();
-    }
+  Future<void> onLoad() async {
+    await super.onLoad();
+
+    final hoja = SpriteSheet(
+      image: game.images.fromCache('armas/explosion.png'),
+      srcSize: Vector2(90, 114),
+    );
+
+    animation = hoja.createAnimation(
+      row: 0,
+      stepTime: 0.05,
+      to: 8,
+      loop: false,
+    );
+    removeOnFinish = true;
   }
 
   @override
-  void render(Canvas canvas) {
-    super.render(canvas);
-    final centro = Offset(size.x / 2, size.y / 2);
-    final radioActual = radio * _progreso;
-    final opacidad = (1.0 - _progreso).clamp(0.0, 1.0);
+  void update(double dt) {
+    if (!game.estadoJuego.enJuego ||
+        game.estadoJuego.enPausa ||
+        game.estadoJuego.finPartida) {
+      return;
+    }
 
-    final paintRelleno = Paint()
-      ..color = const Color(0xFFFF9800).withValues(alpha: opacidad * 0.5)
-      ..style = PaintingStyle.fill;
-
-    final paintBorde = Paint()
-      ..color = const Color(0xFFFF3D00).withValues(alpha: opacidad)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 4.0 * (1.0 - _progreso);
-
-    canvas.drawCircle(centro, radioActual, paintRelleno);
-    canvas.drawCircle(centro, radioActual, paintBorde);
+    super.update(dt);
+    if (animationTicker?.done() ?? false) {
+      removeFromParent();
+    }
   }
 }

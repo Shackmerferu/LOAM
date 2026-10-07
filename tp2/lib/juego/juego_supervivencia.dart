@@ -8,8 +8,11 @@ import '../estado/estado_juego.dart';
 import 'armas/arco.dart';
 import 'armas/espada.dart';
 import 'armas/magia_fuego.dart';
+import 'componentes/diamante.dart';
 import 'componentes/enemigo.dart';
 import 'componentes/jugador.dart';
+import 'componentes/mascara_oscuridad.dart';
+import 'componentes/trader.dart';
 
 class FondoCuadricula extends Component {
   final Paint _paintLinea = Paint()
@@ -40,6 +43,10 @@ class FondoCuadricula extends Component {
 class JuegoSupervivencia extends FlameGame with HasCollisionDetection, DragCallbacks {
   final EstadoJuego estadoJuego;
   late final Jugador jugador;
+
+  /// Centro de la arena restringida; se fija al iniciar la horda del minuto 6.
+  Vector2 centroArena = Vector2.zero();
+  bool _centroArenaFijado = false;
 
   World get mundo => world;
 
@@ -73,10 +80,21 @@ class JuegoSupervivencia extends FlameGame with HasCollisionDetection, DragCallb
       'monstruos/minigolem_caminar.png',
       'monstruos/minigolem_muerte.png',
       'items/diamante.png',
+      'personajes/trader_comerciar.png',
+      'armas/espada_corte.png',
+      'armas/corte_dimensional.png',
+      'armas/arco.png',
+      'armas/ballesta.png',
+      'armas/flecha.png',
+      'armas/flecha_explosiva.png',
+      'armas/explosion.png',
+      'armas/boladefuego.png',
+      'armas/llamarada.png',
     ]);
     debugPrint('[DEBUG_JUEGO] Imágenes precarizadas con éxito');
 
     await world.add(FondoCuadricula());
+    await world.add(MascaraOscuridad());
 
     jugador = Jugador(estadoJuego: estadoJuego);
     await world.add(jugador);
@@ -162,10 +180,16 @@ class JuegoSupervivencia extends FlameGame with HasCollisionDetection, DragCallb
 
     estadoJuego.actualizarTiempo(dt);
 
+    if (estadoJuego.esHordaActiva && !_centroArenaFijado) {
+      _centroArenaFijado = true;
+      centroArena = jugador.position.clone();
+      debugPrint('[DEBUG_JUEGO] Horda iniciada - arena centrada en $centroArena');
+    }
+
     if (estadoJuego.tiempoPartida >= GameConstants.tiempoTiendaMinuto5 &&
         !estadoJuego.tiendaMinuto5Mostrada) {
       estadoJuego.tiendaMinuto5Mostrada = true;
-      pausarPorOverlay('ModalTienda');
+      _spawnComerciante();
     }
 
     _timerSpawn += dt;
@@ -236,6 +260,22 @@ class JuegoSupervivencia extends FlameGame with HasCollisionDetection, DragCallb
     ));
   }
 
+  void _spawnComerciante() {
+    final posicion = jugador.position + Vector2(140, 90);
+    world.add(
+      Trader(
+        estadoJuego: estadoJuego,
+        posicionInicial: posicion,
+      ),
+    );
+    debugPrint('[DEBUG_JUEGO] Comerciante spawneado en el minuto 5');
+  }
+
+  void eliminarComerciante() {
+    world.children.whereType<Trader>().forEach((t) => t.removeFromParent());
+    debugPrint('[DEBUG_JUEGO] Comerciante eliminado tras cerrar la tienda');
+  }
+
   void activarSubidaNivel() {
     jugador.animarSubidaNivel();
     pausarPorOverlay('ModalSubirNivel');
@@ -268,6 +308,15 @@ class JuegoSupervivencia extends FlameGame with HasCollisionDetection, DragCallb
     world.children.whereType<Espada>().forEach((e) => e.removeFromParent());
     world.children.whereType<Arco>().forEach((e) => e.removeFromParent());
     world.children.whereType<MagiaFuego>().forEach((e) => e.removeFromParent());
+    world.children.whereType<Trader>().forEach((e) => e.removeFromParent());
+    world.children.whereType<Diamante>().forEach((e) => e.removeFromParent());
+    world.children.whereType<ProyectilFlecha>().forEach((e) => e.removeFromParent());
+    world.children.whereType<ProyectilBolaFuego>().forEach((e) => e.removeFromParent());
+    world.children.whereType<EfectoLlamaradaContinua>().forEach((e) => e.removeFromParent());
+    world.children.whereType<EfectoCorte>().forEach((e) => e.removeFromParent());
+    world.children.whereType<EfectoExplosion>().forEach((e) => e.removeFromParent());
+    centroArena = Vector2.zero();
+    _centroArenaFijado = false;
     estadoJuego.reiniciarPartida();
     _inicializarArmaActual();
     _spawnOleadaInicial();

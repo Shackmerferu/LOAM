@@ -57,7 +57,7 @@ class _ModalTiendaState extends State<ModalTienda> {
             mainAxisSize: MainAxisSize.min,
             children: [
               const Text(
-                'TIENDA INTERMEDIA (MINUTO 5)',
+                'TIENDA DEL COMERCIANTE',
                 style: TextStyle(
                   color: Colors.cyanAccent,
                   fontSize: 20,
@@ -67,7 +67,7 @@ class _ModalTiendaState extends State<ModalTienda> {
               ),
               const SizedBox(height: 6),
               const Text(
-                'Mejora tus estadísticas base antes de la gran horda',
+                'Toca al comerciante para comprar. Mejora tus estadísticas antes de la gran horda',
                 textAlign: TextAlign.center,
                 style: TextStyle(color: Colors.white70, fontSize: 13),
               ),
@@ -131,6 +131,7 @@ class _ModalTiendaState extends State<ModalTienda> {
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
                   onPressed: () {
+                    widget.juego.eliminarComerciante();
                     widget.juego.reanudarDesdeOverlay('ModalTienda');
                   },
                   child: const Text('CONTINUAR PARTIDA'),

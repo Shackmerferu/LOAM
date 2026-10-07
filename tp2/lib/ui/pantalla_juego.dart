@@ -8,6 +8,7 @@ import 'overlays/modal_anuncio.dart';
 import 'overlays/modal_game_over.dart';
 import 'overlays/modal_subir_nivel.dart';
 import 'overlays/modal_tienda.dart';
+import 'overlays/modal_victoria.dart';
 import 'widgets/cabecera_juego.dart';
 
 class PantallaJuego extends StatefulWidget {
@@ -37,9 +38,18 @@ class _PantallaJuegoState extends State<PantallaJuego> {
       });
     }
 
+    if (estado.victoria && !_juego.overlays.isActive('Victoria')) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _juego.overlays.add('Victoria');
+      });
+    }
+
     return Scaffold(
       backgroundColor: estado.modoOscuro ? GameConstants.fondoOscuro : GameConstants.fondoClaro,
       body: SafeArea(
+        // El header se ancla al borde superior real del teléfono y su fondo
+        // cubre la franja de la status bar.
+        top: false,
         child: Stack(
           children: [
             // 1. El juego ocupa todo el fondo
@@ -55,6 +65,8 @@ class _PantallaJuegoState extends State<PantallaJuego> {
                       ModalAnuncio(estadoJuego: estado, juego: game),
                   'GameOver': (ctx, game) =>
                       ModalGameOver(estadoJuego: estado, juego: game),
+                  'Victoria': (ctx, game) =>
+                      ModalVictoria(estadoJuego: estado, juego: game),
                 },
               ),
             ),

@@ -1,10 +1,17 @@
 import 'dart:math';
 import 'package:flame/components.dart';
-import 'package:flutter/material.dart';
+import 'package:flame/sprite.dart';
 import '../componentes/enemigo.dart';
+import '../juego_supervivencia.dart';
 import 'arma_base.dart';
 
 class MagiaFuego extends ArmaBase {
+  /// Segundos que no puede volver a lanzarse la llamarada tras terminar.
+  static const double duracionCooldownLlamarada = 3.0;
+
+  double _cooldownLlamarada = 0.0;
+  bool _llamaradaEncendida = false;
+
   MagiaFuego({required super.estadoJuego})
       : super(
     intervaloAtaque: 1.6,
@@ -15,9 +22,42 @@ class MagiaFuego extends ArmaBase {
   int get nivel => estadoJuego.fireMagicLevel;
 
   @override
+  void update(double dt) {
+    final jugando = estadoJuego.isPlaying &&
+        !estadoJuego.isPaused &&
+        !estadoJuego.isGameOver &&
+        !estadoJuego.victoria;
+    if (jugando) {
+      final hayLlamarada = game.world.children
+          .whereType<EfectoLlamaradaContinua>()
+          .isNotEmpty;
+
+      if (_llamaradaEncendida && !hayLlamarada) {
+        // La llamarada cesó: inicia el cooldown de 3 s.
+        _llamaradaEncendida = false;
+        _cooldownLlamarada = duracionCooldownLlamarada;
+      }
+
+      if (_cooldownLlamarada > 0) {
+        _cooldownLlamarada -= dt;
+        if (_cooldownLlamarada <= 0) {
+          _cooldownLlamarada = 0.0;
+          // Dispara apenas termine el cooldown.
+          temporizador = intervaloAtaque;
+        }
+      }
+    }
+
+    super.update(dt);
+  }
+
+  @override
   void ejecutarAtaque() {
     final jugador = game.jugador;
-    final enemigos = game.world.children.whereType<Enemigo>().toList();
+    final enemigos = game.world.children
+        .whereType<Enemigo>()
+        .where((e) => e.estaVivo)
+        .toList();
 
     Vector2 direccion = Vector2(0, -1);
     if (enemigos.isNotEmpty) {
@@ -36,10 +76,14 @@ class MagiaFuego extends ArmaBase {
         ),
       );
     } else {
+      final yaActiva =
+          game.world.children.whereType<EfectoLlamaradaContinua>().isNotEmpty;
+      if (yaActiva || _cooldownLlamarada > 0) return;
+
+      _llamaradaEncendida = true;
       game.world.add(
         EfectoLlamaradaContinua(
           posicionOrigen: jugador.position.clone(),
-          direccion: direccion,
           danioBaseSegundo: danioFinal * 1.5,
         ),
       );
@@ -47,7 +91,8 @@ class MagiaFuego extends ArmaBase {
   }
 }
 
-class ProyectilBolaFuego extends PositionComponent {
+class ProyectilBolaFuego extends SpriteAnimationComponent
+    with HasGameReference<JuegoSupervivencia> {
   final Vector2 direccion;
   final double danio;
 
@@ -61,13 +106,40 @@ class ProyectilBolaFuego extends PositionComponent {
     required this.danio,
   }) : super(
     position: posicionInicial,
-    size: Vector2.all(22.0),
+    size: Vector2(50.0, 61.0),
     anchor: Anchor.center,
+    priority: 4,
   );
+
+  @override
+  Future<void> onLoad() async {
+    await super.onLoad();
+
+    final image = game.images.fromCache('armas/boladefuego.png');
+    const cantidadFrames = 8;
+    final anchoFrame = image.width / cantidadFrames;
+
+    final hoja = SpriteSheet(
+      image: image,
+      srcSize: Vector2(anchoFrame, image.height.toDouble()),
+    );
+
+    animation = hoja.createAnimation(
+      row: 0,
+      stepTime: 0.07,
+      to: cantidadFrames,
+    );
+  }
 
   @override
   void update(double dt) {
     super.update(dt);
+
+    if (!game.estadoJuego.enJuego ||
+        game.estadoJuego.enPausa ||
+        game.estadoJuego.finPartida) {
+      return;
+    }
 
     final avance = velocidad * dt;
     position.add(direccion * avance);
@@ -75,7 +147,8 @@ class ProyectilBolaFuego extends PositionComponent {
 
     final enemigos = parent?.children.whereType<Enemigo>() ?? [];
     for (final enemigo in enemigos) {
-      if (enemigo.position.distanceTo(position) <= enemigo.radio + 11.0) {
+      if (!enemigo.estaVivo) continue;
+      if (enemigo.position.distanceTo(position) <= enemigo.radio + 20.0) {
         _impactarArea();
         return;
       }
@@ -90,96 +163,118 @@ class ProyectilBolaFuego extends PositionComponent {
     const radioArea = 60.0;
     final enemigos = parent?.children.whereType<Enemigo>() ?? [];
     for (final enemigo in enemigos) {
+      if (!enemigo.estaVivo) continue;
       if (enemigo.position.distanceTo(position) <= radioArea) {
         enemigo.recibirDanio(danio);
       }
     }
     removeFromParent();
   }
-
-  @override
-  void render(Canvas canvas) {
-    super.render(canvas);
-
-    final centro = Offset(size.x / 2, size.y / 2);
-
-    final paintNucleo = Paint()..color = const Color(0xFFFFEB3B);
-    canvas.drawCircle(centro, 6.0, paintNucleo);
-
-    final paintHalo = Paint()
-      ..color = const Color(0xFFFF5722).withValues(alpha: 0.85)
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4.0);
-    canvas.drawCircle(centro, 11.0, paintHalo);
-  }
 }
 
-class EfectoLlamaradaContinua extends PositionComponent {
-  final Vector2 direccion;
+enum EstadoLlamarada { encendiendo, sostenido }
+
+class EfectoLlamaradaContinua
+    extends SpriteAnimationGroupComponent<EstadoLlamarada>
+    with HasGameReference<JuegoSupervivencia> {
   final double danioBaseSegundo;
 
-  static const double duracionTotal = 2.4;
+  static const double duracionTotal = 5.0;
+  static const double alcanceLlama = 150.0;
+
   double _tiempoActivo = 0.0;
+  Vector2 _direccion = Vector2(1, 0);
 
   EfectoLlamaradaContinua({
     required Vector2 posicionOrigen,
-    required this.direccion,
     required this.danioBaseSegundo,
   }) : super(
     position: posicionOrigen,
-    size: Vector2.all(120.0),
-    anchor: Anchor.center,
-  ) {
-    angle = atan2(direccion.y, direccion.x);
+    size: Vector2(170.0, 191.0),
+    anchor: const Anchor(0.5, 0.4),
+    priority: 5,
+  );
+
+  @override
+  Future<void> onLoad() async {
+    await super.onLoad();
+
+    final hoja = SpriteSheet(
+      image: game.images.fromCache('armas/llamarada.png'),
+      srcSize: Vector2(80, 90),
+    );
+
+    animations = {
+      EstadoLlamarada.encendiendo: hoja.createAnimation(
+        row: 0,
+        stepTime: 0.08,
+        from: 0,
+        to: 5,
+        loop: false,
+      ),
+      EstadoLlamarada.sostenido: hoja.createAnimation(
+        row: 0,
+        stepTime: 0.15,
+        from: 5,
+        to: 8,
+        loop: true,
+      ),
+    };
+
+    current = EstadoLlamarada.encendiendo;
+    _actualizarTransforme();
   }
 
   @override
   void update(double dt) {
-    super.update(dt);
-    _tiempoActivo += dt;
+    if (!game.estadoJuego.enJuego ||
+        game.estadoJuego.enPausa ||
+        game.estadoJuego.finPartida) {
+      return;
+    }
 
+    super.update(dt);
+
+    _tiempoActivo += dt;
     if (_tiempoActivo >= duracionTotal) {
       removeFromParent();
       return;
     }
 
-    final factorEscala = 1.0 + (_tiempoActivo / duracionTotal) * 2.0;
-    final danioTick = (danioBaseSegundo * factorEscala) * dt;
-    final alcanceEfectivo = 110.0 * factorEscala;
+    if (current == EstadoLlamarada.encendiendo &&
+        (animationTicker?.done() ?? false)) {
+      current = EstadoLlamarada.sostenido;
+    }
 
-    final centroFrente = position + (direccion * (alcanceEfectivo / 2));
+    _actualizarTransforme();
+    _aplicarDanio(dt);
+  }
 
-    final enemigos = parent?.children.whereType<Enemigo>() ?? [];
+  void _actualizarTransforme() {
+    final jugador = game.jugador;
+
+    // Sigue el control del jugador (touchpad), sin priorizar enemigos.
+    _direccion = jugador.ultimaDireccion;
+
+    position = jugador.position + _direccion * (size.x * 0.3);
+    angle = atan2(_direccion.y, _direccion.x);
+  }
+
+  void _aplicarDanio(double dt) {
+    final jugador = game.jugador;
+    final factorEscala = 1.0 + (_tiempoActivo / duracionTotal);
+    final danioTick = danioBaseSegundo * factorEscala * dt;
+
+    final centroFrente = jugador.position + _direccion * (alcanceLlama / 2);
+
+    final enemigos = game.world.children
+        .whereType<Enemigo>()
+        .where((e) => e.estaVivo);
+
     for (final enemigo in enemigos) {
-      if (enemigo.position.distanceTo(centroFrente) <= alcanceEfectivo / 1.8) {
+      if (enemigo.position.distanceTo(centroFrente) <= 90.0) {
         enemigo.recibirDanio(danioTick);
       }
     }
-  }
-
-  @override
-  void render(Canvas canvas) {
-    super.render(canvas);
-
-    final progreso = (_tiempoActivo / duracionTotal).clamp(0.0, 1.0);
-    final factorEscala = 1.0 + progreso * 2.0;
-    final opacidad = (1.0 - (progreso * 0.3)).clamp(0.0, 1.0);
-
-    final pathCono = Path()
-      ..moveTo(0, 0)
-      ..lineTo(70.0 * factorEscala, -25.0 * factorEscala)
-      ..lineTo(100.0 * factorEscala, 0)
-      ..lineTo(70.0 * factorEscala, 25.0 * factorEscala)
-      ..close();
-
-    final paintLlama = Paint()
-      ..shader = RadialGradient(
-        colors: [
-          Colors.white,
-          const Color(0xFFFFEB3B).withValues(alpha: opacidad),
-          const Color(0xFFFF3D00).withValues(alpha: opacidad * 0.8),
-        ],
-      ).createShader(Rect.fromLTWH(0, -30, 100 * factorEscala, 60 * factorEscala));
-
-    canvas.drawPath(pathCono, paintLlama);
   }
 }

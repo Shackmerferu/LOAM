@@ -54,6 +54,9 @@ class EstadoJuego extends ChangeNotifier {
   bool finPartida = false;
   bool get isGameOver => finPartida;
 
+  bool victoria = false;
+  bool get isVictory => victoria;
+
   bool tiendaMinuto5Mostrada = false;
 
   void iniciarPartida() {
@@ -61,6 +64,7 @@ class EstadoJuego extends ChangeNotifier {
     enJuego = true;
     enPausa = false;
     finPartida = false;
+    victoria = false;
     tiendaMinuto5Mostrada = false;
     notificarSeguro();
   }
@@ -100,12 +104,16 @@ class EstadoJuego extends ChangeNotifier {
     tiempoPartida = 0.0;
     _ultimoSegundoNotificado = -1;
     puntaje = 0;
+    diamantesRecolectados = 0;
+    diamantesComprados = 0;
+    vidasExtras = 0;
     nivelJugador = 1;
     xpActual = 0.0;
     xpObjetivo = 100.0;
-    vidaMax = 100.0;
-    vidaActual = 100.0;
+    vidaMax = 150.0;
+    vidaActual = 150.0;
     asignarArmaInicialAleatoria();
+    bonusDanioComprado = 0.0;
     tiendaMinuto5Mostrada = false;
     finPartida = false;
     iniciarPartida();
@@ -116,6 +124,15 @@ class EstadoJuego extends ChangeNotifier {
     enJuego = false;
     finPartida = true;
     diamantesRecolectados = max(0, diamantesRecolectados - GameConstants.penalizacionDiamantesMuerte);
+    notificarSeguro();
+  }
+
+  void ganarPartida() {
+    debugPrint('[DEBUG_ESTADO] ganarPartida() llamado - 10 minutos completados');
+    enJuego = false;
+    enPausa = false;
+    finPartida = false;
+    victoria = true;
     notificarSeguro();
   }
 
@@ -142,16 +159,23 @@ class EstadoJuego extends ChangeNotifier {
   int get totalDiamantes => diamantesRecolectados + diamantesComprados;
   int get diamonds => totalDiamantes;
 
+  /// Vidas extra compradas en la tienda simulada; consume una al morir.
+  int vidasExtras = 0;
+
+  void comprarVidaExtraSimulada() {
+    vidasExtras += 1;
+    debugPrint('[DEBUG_ESTADO] Vida extra comprada. Total: $vidasExtras');
+    notificarSeguro();
+  }
+
   void simularCompraIAP(int cantidad) {
     diamantesComprados += cantidad;
     notificarSeguro();
   }
   void buyDiamonds(int amount) => simularCompraIAP(amount);
 
-  void dropDiamante() {
-    final ganancia = GameConstants.dropMinDiamantes +
-        _random.nextInt(GameConstants.dropMaxDiamantes - GameConstants.dropMinDiamantes + 1);
-    diamantesRecolectados += ganancia;
+  void dropDiamante([int cantidad = GameConstants.dropMinDiamantes]) {
+    diamantesRecolectados += cantidad;
     puntaje += 15;
     notificarSeguro();
   }
@@ -160,15 +184,27 @@ class EstadoJuego extends ChangeNotifier {
   int nivelJugador = 1;
   double xpActual = 0.0;
   double xpObjetivo = 100.0;
-  double vidaMax = 100.0;
-  double vidaActual = 100.0;
+  double vidaMax = 150.0;
+  double vidaActual = 150.0;
   double velocidadMovimiento = 150.0;
+  double bonusDanioComprado = 0.0;
 
-  double get damageMultiplier => 1.0 + (nivelEspada + nivelArco + nivelMagia - 3) * 0.15;
+  double get damageMultiplier =>
+      1.0 +
+      (nivelEspada + nivelArco + nivelMagia - 3) * 0.15 +
+      bonusDanioComprado;
 
   void aplicarDanioJugador(double cantidad) {
     vidaActual -= cantidad;
     if (vidaActual <= 0) {
+      if (vidasExtras > 0) {
+        // Vida extra: revive con la barra completa en lugar de morir.
+        vidasExtras--;
+        vidaActual = vidaMax;
+        debugPrint('[DEBUG_ESTADO] Vida extra consumida. Restantes: $vidasExtras');
+        notificarSeguro();
+        return;
+      }
       vidaActual = 0;
       terminarPartida();
     } else {
@@ -210,7 +246,8 @@ class EstadoJuego extends ChangeNotifier {
     tiempoPartida += dt;
 
     if (tiempoPartida >= GameConstants.duracionMaximaPartida) {
-      terminarPartida();
+      tiempoPartida = GameConstants.duracionMaximaPartida;
+      ganarPartida();
       return;
     }
 
@@ -276,6 +313,8 @@ class EstadoJuego extends ChangeNotifier {
       vidaActual = (vidaActual + 30.0).clamp(0.0, vidaMax);
     } else if (tipo == 'velocidad' || tipo == 'speed') {
       velocidadMovimiento += 25.0;
+    } else if (tipo == 'damage' || tipo == 'dano') {
+      bonusDanioComprado += 0.25;
     }
     notificarSeguro();
     return true;

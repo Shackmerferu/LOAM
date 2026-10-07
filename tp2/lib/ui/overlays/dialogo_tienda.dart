@@ -63,14 +63,60 @@ class DialogoTienda extends StatelessWidget {
               destacado: true,
             ),
             const SizedBox(height: 10),
-            _construirPaquete(
-              context: context,
-              diamantes: 1200,
-              precioSimulado: '\$7.99',
-              icono: Icons.auto_awesome,
-            ),
+            _construirVidaExtra(context: context),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _construirVidaExtra({required BuildContext context}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
+      decoration: BoxDecoration(
+        color: const Color(0xFF2C2C44),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.redAccent),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.favorite, color: Colors.redAccent, size: 24),
+              const SizedBox(width: 10),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    '1 Vida Extra',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                  Text(
+                    'Vidas extra: ${estadoJuego.vidasExtras}',
+                    style: const TextStyle(color: Colors.white60, fontSize: 11),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.redAccent.shade700,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            ),
+            onPressed: () {
+              estadoJuego.comprarVidaExtraSimulada();
+              Navigator.of(context).pop();
+            },
+            child: const Text('\$7.99'),
+          ),
+        ],
       ),
     );
   }

@@ -15,11 +15,15 @@ with HasGameReference<JuegoSupervivencia>, CollisionCallbacks {
 final TipoMonstruo tipo;
 final EstadoJuego estadoJuego;
 
+static const double factorVelocidad = 0.8;
+
 late double vidaMax;
 late double vidaActual;
 late double velocidad;
 late double danio;
 late double xpOtorgada;
+
+bool get estaVivo => current != EstadoEnemigo.muriendo;
 
 double get radio => size.x * 0.2;
 
@@ -89,6 +93,7 @@ return 6;
     position: posicionInicial,
     size: Vector2.all(tipo == TipoMonstruo.miniGolem ? 80 : 64),
     anchor: Anchor.center,
+    removeOnFinish: const {EstadoEnemigo.muriendo: true},
   ) {
     _configurarEstadisticas();
   }
@@ -100,31 +105,44 @@ switch (tipo) {
 case TipoMonstruo.limo:
 case TipoMonstruo.slime:
 vidaMax = 40.0 * mult;
-velocidad = 65.0 * (mult > 1.0 ? 1.3 : 1.0);
+velocidad = 65.0 * (mult > 1.0 ? 1.3 : 1.0) * factorVelocidad;
 danio = 8.0 * mult;
 xpOtorgada = 20.0;
 break;
 case TipoMonstruo.lobo:
 vidaMax = 30.0 * mult;
-velocidad = 120.0 * (mult > 1.0 ? 1.35 : 1.0);
+velocidad = 120.0 * (mult > 1.0 ? 1.35 : 1.0) * factorVelocidad;
 danio = 10.0 * mult;
 xpOtorgada = 25.0;
 break;
 case TipoMonstruo.esqueleto:
 vidaMax = 90.0 * mult;
-velocidad = 55.0 * (mult > 1.0 ? 1.2 : 1.0);
+velocidad = 55.0 * (mult > 1.0 ? 1.2 : 1.0) * factorVelocidad;
 danio = 16.0 * mult;
 xpOtorgada = 45.0;
 break;
 case TipoMonstruo.miniGolem:
 vidaMax = 120.0 * mult;
-velocidad = 45.0 * (mult > 1.0 ? 1.2 : 1.0);
+velocidad = 45.0 * (mult > 1.0 ? 1.2 : 1.0) * factorVelocidad;
 danio = 18.0 * mult;
 xpOtorgada = 50.0;
 break;
 }
 
 vidaActual = vidaMax;
+}
+
+int get _diamantesPorMuerte {
+switch (tipo) {
+case TipoMonstruo.lobo:
+case TipoMonstruo.limo:
+case TipoMonstruo.slime:
+return 10;
+case TipoMonstruo.esqueleto:
+return 20;
+case TipoMonstruo.miniGolem:
+return 30;
+}
 }
 
 @override
@@ -141,6 +159,7 @@ EstadoEnemigo.muriendo: await _cargarAnimacion(
 'monstruos/$_nombreMuerteAsset.png',
 _framesMuerte,
 0.08,
+loop: false,
 ),
 };
 
@@ -158,8 +177,9 @@ position: Vector2.zero(),
 Future<SpriteAnimation> _cargarAnimacion(
 String path,
 int cantidadFrames,
-double stepTime,
-) async {
+double stepTime, {
+bool loop = true,
+}) async {
 final image = await game.images.load(path);
 
 final anchoFrame = image.width % image.height == 0
@@ -175,6 +195,7 @@ return spriteSheet.createAnimation(
 row: 0,
 stepTime: stepTime,
 to: cantidadFrames,
+loop: loop,
 );
 }
 
@@ -182,16 +203,16 @@ to: cantidadFrames,
 void update(double dt) {
 super.update(dt);
 
-if (!estadoJuego.enJuego ||
-estadoJuego.enPausa ||
-estadoJuego.finPartida) {
-return;
-}
-
 if (current == EstadoEnemigo.muriendo) {
 if (animationTicker?.done() ?? false) {
 removeFromParent();
 }
+return;
+}
+
+if (!estadoJuego.enJuego ||
+estadoJuego.enPausa ||
+estadoJuego.finPartida) {
 return;
 }
 
@@ -215,7 +236,7 @@ game.jugador.recibirDanio(danio * dt);
 void render(Canvas canvas) {
 super.render(canvas);
 
-if (vidaActual < vidaMax) {
+if (vidaActual < vidaMax && current != EstadoEnemigo.muriendo) {
 const anchoBarra = 24.0;
 const altoBarra = 3.0;
 final x = (size.x - anchoBarra) / 2;
@@ -267,6 +288,7 @@ game.mundo.add(
 Diamante(
 estadoJuego: estadoJuego,
 posicionInicial: position.clone(),
+valor: _diamantesPorMuerte,
 ),
 );
 

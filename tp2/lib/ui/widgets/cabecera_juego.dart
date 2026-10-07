@@ -35,8 +35,10 @@ class CabeceraJuego extends StatelessWidget {
               ),
             ],
           ),
-          child: SafeArea(
-            bottom: false,
+          child: Padding(
+            // La franja superior (status bar) queda cubierta por el fondo del
+            // header; el contenido se desplaza debajo de los iconos del sistema.
+            padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [

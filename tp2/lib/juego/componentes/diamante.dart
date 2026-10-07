@@ -5,6 +5,7 @@ import '../juego_supervivencia.dart';
 
 class Diamante extends SpriteComponent with HasGameReference<JuegoSupervivencia> {
   final EstadoJuego estadoJuego;
+  final int valor;
 
   static const double radioIman = 140.0;
   static const double radioRecoleccion = 24.0;
@@ -15,6 +16,7 @@ class Diamante extends SpriteComponent with HasGameReference<JuegoSupervivencia>
   Diamante({
     required this.estadoJuego,
     required Vector2 posicionInicial,
+    this.valor = 10,
   }) : super(
     position: posicionInicial,
     size: Vector2(24, 24),
@@ -58,7 +60,7 @@ class Diamante extends SpriteComponent with HasGameReference<JuegoSupervivencia>
     final dist = position.distanceTo(posJugador);
 
     if (dist <= radioRecoleccion) {
-      estadoJuego.dropDiamante();
+      estadoJuego.dropDiamante(valor);
       removeFromParent();
       return;
     }

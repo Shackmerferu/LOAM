@@ -12,6 +12,9 @@ class Jugador extends SpriteAnimationGroupComponent<EstadoJugador>
     with HasGameReference<JuegoSupervivencia>, CollisionCallbacks {
   final EstadoJuego estadoJuego;
   Vector2 direccionMovimiento = Vector2.zero();
+
+  /// Última dirección con la que se movió (para el arco y la llamarada).
+  Vector2 ultimaDireccion = Vector2(1, 0);
   bool _estaMuerto = false;
 
   double _inmunidadRestante = 0.0;
@@ -26,6 +29,9 @@ class Jugador extends SpriteAnimationGroupComponent<EstadoJugador>
   void mover(Vector2 delta) {
     if (_estaMuerto) return;
     direccionMovimiento = delta;
+    if (!delta.isZero()) {
+      ultimaDireccion = delta.normalized();
+    }
   }
 
   @override
@@ -125,9 +131,10 @@ class Jugador extends SpriteAnimationGroupComponent<EstadoJugador>
 
   void _confinarLimites() {
     if (estadoJuego.esHordaActiva) {
+      final centro = game.centroArena;
       final mitad = GameConstants.tamanoAreaRestringida / 2;
-      position.x = position.x.clamp(-mitad, mitad);
-      position.y = position.y.clamp(-mitad, mitad);
+      position.x = position.x.clamp(centro.x - mitad, centro.x + mitad);
+      position.y = position.y.clamp(centro.y - mitad, centro.y + mitad);
     } else {
       const limite = 1400.0;
       position.x = position.x.clamp(-limite, limite);

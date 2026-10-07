@@ -10,7 +10,7 @@ class GameConstants {
   static const int minEnemigos = 10;
   static const int maxEnemigos = 15;
   static const double multiplicadorHordaMinuto6 = 2.5;
-  static const double tamanoAreaRestringida = 360.0;
+  static const double tamanoAreaRestringida = 432.0;
 
   // Progresión y armas
   static const int maxWeaponLevel = 7;
