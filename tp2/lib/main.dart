@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'estado/estado_juego.dart';
 import 'ui/pantalla_inicio.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // El juego está diseñado en vertical: bloqueamos la rotación para evitar
+  // solapamientos de UI en horizontal (además del bloqueo nativo en los
+  // AndroidManifest/Info.plist).
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
   runApp(
     MultiProvider(
       providers: [

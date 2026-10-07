@@ -47,11 +47,10 @@ class Arco extends ArmaBase {
 
     final jugador = game.jugador;
 
-    // El arco queda anclado a la derecha del sprite y gira con el touchpad,
-    // igual que la llamarada.
+    // Mismo concepto de seguimiento que la llamarada (solo el sprite):
+    // nace al fondo del sprite del jugador y gira con la última dirección.
     _dirActual = jugador.ultimaDireccion;
-    final ladoDerecho = jugador.scale.x.sign;
-    visual.position = jugador.position + Vector2(30.0 * ladoDerecho, 0.0);
+    visual.position = jugador.position + Vector2(0, jugador.size.y / 2);
     visual.angle = atan2(_dirActual.y, _dirActual.x) + pi / 4;
 
     final ruta = estaMejorada ? 'armas/ballesta.png' : 'armas/arco.png';

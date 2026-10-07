@@ -18,7 +18,9 @@ class EstadoJuego extends ChangeNotifier {
     notificarSeguro();
   }
 
-  AccountType accountType = AccountType.pro;
+  // Arranca en BASIC; pasa a PRO solo con la compra simulada de la tienda.
+  // No se persiste: al reiniciar/cerrar la app vuelve a BASIC.
+  AccountType accountType = AccountType.basic;
   AccountType get tipoCuenta => accountType;
   set tipoCuenta(AccountType value) {
     accountType = value;
@@ -30,6 +32,12 @@ class EstadoJuego extends ChangeNotifier {
     notificarSeguro();
   }
   void alternarTipoCuenta() => switchAccountType();
+
+  void comprarCuentaPro() {
+    accountType = AccountType.pro;
+    debugPrint('[DEBUG_ESTADO] Cuenta PRO activada (compra simulada)');
+    notificarSeguro();
+  }
 
   // Apariencia
   bool modoOscuro = true;

@@ -143,14 +143,19 @@ class Jugador extends SpriteAnimationGroupComponent<EstadoJugador>
   }
 
   void recibirDanio(double cantidad) {
-    if (_estaMuerto || _inmunidadRestante > 0) return;
+    if (_estaMuerto || cantidad <= 0) return;
 
-    _inmunidadRestante = _tiempoInmunidad;
+    // El daño por contacto se aplica siempre (modelo DPS: danio * dt por
+    // frame); la inmunidad solo controla la animación de golpe y el parpadeo.
     estadoJuego.aplicarDanioJugador(cantidad);
 
     if (estadoJuego.vidaActual <= 0) {
       _morir();
-    } else {
+      return;
+    }
+
+    if (_inmunidadRestante <= 0) {
+      _inmunidadRestante = _tiempoInmunidad;
       current = EstadoJugador.danio;
       animationTicker?.reset();
     }

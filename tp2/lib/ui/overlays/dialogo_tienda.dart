@@ -64,8 +64,67 @@ class DialogoTienda extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             _construirVidaExtra(context: context),
+            const SizedBox(height: 10),
+            _construirPro(context: context),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _construirPro({required BuildContext context}) {
+    final yaEsPro = estadoJuego.accountType == AccountType.pro;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
+      decoration: BoxDecoration(
+        color: const Color(0xFF2C2C44),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.amberAccent),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.workspace_premium, color: Colors.amberAccent, size: 24),
+              const SizedBox(width: 10),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Cuenta PRO',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                  Text(
+                    yaEsPro
+                        ? 'Ya tienes los beneficios exclusivos'
+                        : 'Gana beneficios exclusivos',
+                    style: const TextStyle(color: Colors.white60, fontSize: 11),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.amber.shade700,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            ),
+            onPressed: yaEsPro
+                ? null
+                : () {
+                    estadoJuego.comprarCuentaPro();
+                    Navigator.of(context).pop();
+                  },
+            child: Text(yaEsPro ? 'ACTIVA' : '\$9.99'),
+          ),
+        ],
       ),
     );
   }

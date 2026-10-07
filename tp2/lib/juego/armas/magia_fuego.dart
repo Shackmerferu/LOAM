@@ -191,7 +191,9 @@ class EfectoLlamaradaContinua
   }) : super(
     position: posicionOrigen,
     size: Vector2(170.0, 191.0),
-    anchor: const Anchor(0.5, 0.4),
+    // Ancla en la base (borde izquierdo) para que la llamarada empiece
+    // exactamente en el origen y no a la mitad del sprite.
+    anchor: const Anchor(0.0, 0.4),
     priority: 5,
   );
 
@@ -256,7 +258,8 @@ class EfectoLlamaradaContinua
     // Sigue el control del jugador (touchpad), sin priorizar enemigos.
     _direccion = jugador.ultimaDireccion;
 
-    position = jugador.position + _direccion * (size.x * 0.3);
+    // La llamarada inicia al fondo del sprite del jugador (offset x, y/2).
+    position = jugador.position + Vector2(0, jugador.size.y / 2);
     angle = atan2(_direccion.y, _direccion.x);
   }
 

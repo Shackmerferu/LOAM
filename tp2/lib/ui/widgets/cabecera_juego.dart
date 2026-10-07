@@ -57,23 +57,22 @@ class CabeceraJuego extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        GestureDetector(
-                          onTap: estadoJuego.switchAccountType,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: estadoJuego.accountType == AccountType.pro
-                                  ? Colors.amber.shade700
-                                  : Colors.grey.shade600,
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: Text(
-                              estadoJuego.accountType == AccountType.pro ? 'PRO' : 'BASIC',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                              ),
+                        // Etiqueta solo-lectura: pasa a PRO con la compra
+                        // simulada de la tienda (vuelve a BASIC al reiniciar).
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: estadoJuego.accountType == AccountType.pro
+                                ? Colors.amber.shade700
+                                : Colors.grey.shade600,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            estadoJuego.accountType == AccountType.pro ? 'PRO' : 'BASIC',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
