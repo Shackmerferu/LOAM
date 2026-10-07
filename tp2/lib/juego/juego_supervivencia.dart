@@ -88,10 +88,6 @@ class JuegoSupervivencia extends FlameGame with HasCollisionDetection, DragCallb
     camera.viewfinder.anchor = Anchor.center;
     camera.follow(jugador);
 
-    if (!estadoJuego.enJuego) {
-      estadoJuego.iniciarPartida();
-    }
-
     _spawnOleadaInicial();
     debugPrint('[DEBUG_JUEGO] onLoad() finalizado correctamente');
   }

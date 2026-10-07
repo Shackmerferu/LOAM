@@ -21,7 +21,7 @@ late double velocidad;
 late double danio;
 late double xpOtorgada;
 
-double get radio => size.x * 0.4;
+double get radio => size.x * 0.2;
 
 String get _nombreCaminarAsset {
 switch (tipo) {
@@ -81,32 +81,17 @@ return 6;
 }
 }
 
-Vector2 get _tamanoFrame {
-switch (tipo) {
-case TipoMonstruo.limo:
-return Vector2(32, 32);
-case TipoMonstruo.lobo:
-return Vector2(32, 32);
-case TipoMonstruo.slime:
-return Vector2(32, 32);
-case TipoMonstruo.esqueleto:
-return Vector2(32, 32);
-case TipoMonstruo.miniGolem:
-return Vector2(32, 32);
-}
-}
-
-Enemigo({
-required this.tipo,
-required this.estadoJuego,
-required Vector2 posicionInicial,
-}) : super(
-position: posicionInicial,
-size: Vector2.all(32),
-anchor: Anchor.center,
-) {
-_configurarEstadisticas();
-}
+  Enemigo({
+    required this.tipo,
+    required this.estadoJuego,
+    required Vector2 posicionInicial,
+  }) : super(
+    position: posicionInicial,
+    size: Vector2.all(tipo == TipoMonstruo.miniGolem ? 80 : 64),
+    anchor: Anchor.center,
+  ) {
+    _configurarEstadisticas();
+  }
 
 void _configurarEstadisticas() {
 final mult = estadoJuego.multiplicadorEnemigo;
@@ -177,9 +162,13 @@ double stepTime,
 ) async {
 final image = await game.images.load(path);
 
+final anchoFrame = image.width % image.height == 0
+    ? image.height.toDouble()
+    : image.width / cantidadFrames;
+
 final spriteSheet = SpriteSheet(
 image: image,
-srcSize: _tamanoFrame,
+srcSize: Vector2(anchoFrame, image.height.toDouble()),
 );
 
 return spriteSheet.createAnimation(

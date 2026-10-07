@@ -88,14 +88,6 @@ class _PantallaJuegoState extends State<PantallaJuego> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           ElevatedButton.icon(
-            icon: const Icon(Icons.play_arrow),
-            label: const Text('Iniciar'),
-            onPressed: estado.enJuego ? null : () {
-              debugPrint('[DEBUG_UI] Botón Iniciar presionado');
-              estado.iniciarPartida();
-            },
-          ),
-          ElevatedButton.icon(
             icon: Icon(estado.enPausa ? Icons.play_arrow : Icons.pause),
             label: Text(estado.enPausa ? 'Reanudar' : 'Pausar'),
             onPressed: !estado.enJuego

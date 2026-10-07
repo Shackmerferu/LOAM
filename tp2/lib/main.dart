@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'estado/estado_juego.dart';
-import 'ui/pantalla_juego.dart';
+import 'ui/pantalla_inicio.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,7 +28,7 @@ class SurvivorApp extends StatelessWidget {
       theme: ThemeData(
         brightness: estado.modoOscuro ? Brightness.dark : Brightness.light,
       ),
-      home: const PantallaJuego(),
+      home: const PantallaInicio(),
     );
   }
 }

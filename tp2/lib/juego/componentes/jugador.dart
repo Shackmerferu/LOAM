@@ -19,7 +19,7 @@ class Jugador extends SpriteAnimationGroupComponent<EstadoJugador>
 
   Jugador({required this.estadoJuego})
       : super(
-    size: Vector2(48, 48),
+    size: Vector2.all(96),
     anchor: Anchor.center,
   );
 
@@ -35,11 +35,11 @@ class Jugador extends SpriteAnimationGroupComponent<EstadoJugador>
     debugPrint('[DEBUG_JUGADOR] onLoad() iniciado, posición inicial: $position');
 
     animations = {
-      EstadoJugador.quieto: await _cargarAnimacion('personajes/jugador_quieto.png', 4, 0.2),
-      EstadoJugador.caminando: await _cargarAnimacion('personajes/jugador_caminar.png', 6, 0.12),
-      EstadoJugador.danio: await _cargarAnimacion('personajes/jugador_herido.png', 4, 0.08),
-      EstadoJugador.muerte: await _cargarAnimacion('personajes/jugador_muerte.png', 4, 0.1),
-      EstadoJugador.subirNivel: await _cargarAnimacion('personajes/jugador_levelup.png', 4, 0.1),
+      EstadoJugador.quieto: await _cargarAnimacion('personajes/jugador_quieto.png', 6, 0.2),
+      EstadoJugador.caminando: await _cargarAnimacion('personajes/jugador_caminar.png', 12, 0.08),
+      EstadoJugador.danio: await _cargarAnimacion('personajes/jugador_herido.png', 3, 0.08),
+      EstadoJugador.muerte: await _cargarAnimacion('personajes/jugador_muerte.png', 5, 0.1),
+      EstadoJugador.subirNivel: await _cargarAnimacion('personajes/jugador_levelup.png', 7, 0.1),
     };
 
     current = EstadoJugador.quieto;
@@ -49,7 +49,7 @@ class Jugador extends SpriteAnimationGroupComponent<EstadoJugador>
 
   Future<SpriteAnimation> _cargarAnimacion(String path, int amount, double stepTime) async {
     final image = await game.images.load(path);
-    final spriteSheet = SpriteSheet(image: image, srcSize: Vector2(32, 32));
+    final spriteSheet = SpriteSheet(image: image, srcSize: Vector2.all(image.height.toDouble()));
     return spriteSheet.createAnimation(row: 0, stepTime: stepTime, to: amount);
   }
 
