@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
+
 import '../../estado/estado_juego.dart';
 import '../../juego/juego_supervivencia.dart';
 
@@ -51,11 +52,14 @@ class BarraControles extends StatelessWidget {
                 else ...[
                   ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                      estadoJuego.isPaused ? Colors.amber.shade700 : Colors.blueGrey,
+                      backgroundColor: estadoJuego.isPaused
+                          ? Colors.amber.shade700
+                          : Colors.blueGrey,
                       foregroundColor: Colors.white,
                     ),
-                    icon: Icon(estadoJuego.isPaused ? Icons.play_arrow : Icons.pause),
+                    icon: Icon(
+                      estadoJuego.isPaused ? Icons.play_arrow : Icons.pause,
+                    ),
                     label: Text(estadoJuego.isPaused ? 'REANUDAR' : 'PAUSA'),
                     onPressed: () {
                       if (estadoJuego.isPaused) {

@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
+
 import '../../estado/estado_juego.dart';
 import '../../juego/juego_supervivencia.dart';
 
@@ -58,19 +59,13 @@ class ModalGameOver extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 'Diamantes Recolectados: ${estadoJuego.diamonds}',
-                style: const TextStyle(
-                  color: Colors.cyanAccent,
-                  fontSize: 14,
-                ),
+                style: const TextStyle(color: Colors.cyanAccent, fontSize: 14),
               ),
               const SizedBox(height: 16),
               const Text(
                 'Presiona "Reiniciar" en la botonera inferior para volver a jugar.',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white60,
-                  fontSize: 12,
-                ),
+                style: TextStyle(color: Colors.white60, fontSize: 12),
               ),
             ],
           ),

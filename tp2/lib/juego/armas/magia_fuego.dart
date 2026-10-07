@@ -1,15 +1,14 @@
 import 'dart:math';
+
 import 'package:flame/components.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
+
 import '../componentes/enemigo.dart';
 import 'arma_base.dart';
 
 class MagiaFuego extends ArmaBase {
   MagiaFuego({required super.estadoJuego})
-      : super(
-    intervaloAtaque: 1.6,
-    danioBase: 45.0,
-  );
+    : super(intervaloAtaque: 1.6, danioBase: 45.0);
 
   @override
   int get nivel => estadoJuego.fireMagicLevel;
@@ -21,9 +20,11 @@ class MagiaFuego extends ArmaBase {
 
     Vector2 direccion = Vector2(0, -1);
     if (enemigos.isNotEmpty) {
-      enemigos.sort((a, b) => a.position
-          .distanceTo(jugador.position)
-          .compareTo(b.position.distanceTo(jugador.position)));
+      enemigos.sort(
+        (a, b) => a.position
+            .distanceTo(jugador.position)
+            .compareTo(b.position.distanceTo(jugador.position)),
+      );
       direccion = (enemigos.first.position - jugador.position).normalized();
     }
 
@@ -60,10 +61,10 @@ class ProyectilBolaFuego extends PositionComponent {
     required this.direccion,
     required this.danio,
   }) : super(
-    position: posicionInicial,
-    size: Vector2.all(22.0),
-    anchor: Anchor.center,
-  );
+         position: posicionInicial,
+         size: Vector2.all(22.0),
+         anchor: Anchor.center,
+       );
 
   @override
   void update(double dt) {
@@ -125,10 +126,10 @@ class EfectoLlamaradaContinua extends PositionComponent {
     required this.direccion,
     required this.danioBaseSegundo,
   }) : super(
-    position: posicionOrigen,
-    size: Vector2.all(120.0),
-    anchor: Anchor.center,
-  ) {
+         position: posicionOrigen,
+         size: Vector2.all(120.0),
+         anchor: Anchor.center,
+       ) {
     angle = atan2(direccion.y, direccion.x);
   }
 
@@ -172,13 +173,16 @@ class EfectoLlamaradaContinua extends PositionComponent {
       ..close();
 
     final paintLlama = Paint()
-      ..shader = RadialGradient(
-        colors: [
-          Colors.white,
-          const Color(0xFFFFEB3B).withValues(alpha: opacidad),
-          const Color(0xFFFF3D00).withValues(alpha: opacidad * 0.8),
-        ],
-      ).createShader(Rect.fromLTWH(0, -30, 100 * factorEscala, 60 * factorEscala));
+      ..shader =
+          RadialGradient(
+            colors: [
+              Colors.white,
+              const Color(0xFFFFEB3B).withValues(alpha: opacidad),
+              const Color(0xFFFF3D00).withValues(alpha: opacidad * 0.8),
+            ],
+          ).createShader(
+            Rect.fromLTWH(0, -30, 100 * factorEscala, 60 * factorEscala),
+          );
 
     canvas.drawPath(pathCono, paintLlama);
   }

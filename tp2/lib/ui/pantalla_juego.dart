@@ -1,6 +1,7 @@
 import 'package:flame/game.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
+
 import '../core/constantes.dart';
 import '../estado/estado_juego.dart';
 import '../juego/juego_supervivencia.dart';
@@ -38,7 +39,9 @@ class _PantallaJuegoState extends State<PantallaJuego> {
     }
 
     return Scaffold(
-      backgroundColor: estado.modoOscuro ? GameConstants.fondoOscuro : GameConstants.fondoClaro,
+      backgroundColor: estado.modoOscuro
+          ? GameConstants.fondoOscuro
+          : GameConstants.fondoClaro,
       body: SafeArea(
         child: Stack(
           children: [
@@ -79,7 +82,9 @@ class _PantallaJuegoState extends State<PantallaJuego> {
   }
 
   Widget _construirBotoneraExterna(EstadoJuego estado) {
-    final colorFondo = estado.modoOscuro ? GameConstants.superficieOscura : GameConstants.superficieClara;
+    final colorFondo = estado.modoOscuro
+        ? GameConstants.superficieOscura
+        : GameConstants.superficieClara;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -90,10 +95,12 @@ class _PantallaJuegoState extends State<PantallaJuego> {
           ElevatedButton.icon(
             icon: const Icon(Icons.play_arrow),
             label: const Text('Iniciar'),
-            onPressed: estado.enJuego ? null : () {
-              debugPrint('[DEBUG_UI] Botón Iniciar presionado');
-              estado.iniciarPartida();
-            },
+            onPressed: estado.enJuego
+                ? null
+                : () {
+                    debugPrint('[DEBUG_UI] Botón Iniciar presionado');
+                    estado.iniciarPartida();
+                  },
           ),
           ElevatedButton.icon(
             icon: Icon(estado.enPausa ? Icons.play_arrow : Icons.pause),
@@ -101,19 +108,21 @@ class _PantallaJuegoState extends State<PantallaJuego> {
             onPressed: !estado.enJuego
                 ? null
                 : () {
-              if (estado.enPausa) {
-                debugPrint('[DEBUG_UI] Botón Reanudar presionado');
-                estado.reanudarPartida();
-              } else {
-                debugPrint('[DEBUG_UI] Botón Pausar presionado');
-                estado.pausarPartida();
-              }
-            },
+                    if (estado.enPausa) {
+                      debugPrint('[DEBUG_UI] Botón Reanudar presionado');
+                      estado.reanudarPartida();
+                    } else {
+                      debugPrint('[DEBUG_UI] Botón Pausar presionado');
+                      estado.pausarPartida();
+                    }
+                  },
           ),
           ElevatedButton.icon(
             icon: const Icon(Icons.refresh),
             label: const Text('Reiniciar'),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent.shade700),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.redAccent.shade700,
+            ),
             onPressed: () {
               debugPrint('[DEBUG_UI] Botón Reiniciar presionado');
               _juego.overlays.clear();

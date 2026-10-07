@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
+
 import 'estado/estado_juego.dart';
 import 'ui/pantalla_juego.dart';
 
@@ -7,9 +8,7 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
     MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => EstadoJuego()),
-      ],
+      providers: [ChangeNotifierProvider(create: (_) => EstadoJuego())],
       child: const SurvivorApp(),
     ),
   );

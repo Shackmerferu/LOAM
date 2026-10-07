@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
+
 import '../../estado/estado_juego.dart';
 import '../../juego/juego_supervivencia.dart';
 
@@ -41,7 +42,7 @@ class _ModalTiendaState extends State<ModalTienda> {
         margin: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
         padding: const EdgeInsets.all(20.0),
         decoration: BoxDecoration(
-          color: const Color(0xFF1A1A2E).withOpacity(0.97),
+          color: const Color(0xFF1A1A2E).withValues(alpha: 0.97),
           borderRadius: BorderRadius.circular(24.0),
           border: Border.all(color: Colors.cyanAccent, width: 2.0),
           boxShadow: const [
@@ -162,7 +163,7 @@ class _ModalTiendaState extends State<ModalTienda> {
         children: [
           CircleAvatar(
             radius: 20,
-            backgroundColor: colorIcono.withOpacity(0.15),
+            backgroundColor: colorIcono.withValues(alpha: 0.15),
             child: Icon(icono, color: colorIcono, size: 22),
           ),
           const SizedBox(width: 12),

@@ -1,5 +1,7 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
+
+import 'package:material_ui/material_ui.dart';
+
 import '../../estado/estado_juego.dart';
 import '../../juego/juego_supervivencia.dart';
 
@@ -74,7 +76,10 @@ class _ModalAnuncioState extends State<ModalAnuncio> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.amber.shade800,
                       borderRadius: BorderRadius.circular(4),
@@ -89,7 +94,9 @@ class _ModalAnuncioState extends State<ModalAnuncio> {
                     ),
                   ),
                   Text(
-                    _segundosRestantes > 0 ? 'Espera $_segundosRestantes s' : 'Listo',
+                    _segundosRestantes > 0
+                        ? 'Espera $_segundosRestantes s'
+                        : 'Listo',
                     style: const TextStyle(color: Colors.white70, fontSize: 12),
                   ),
                 ],
@@ -106,7 +113,11 @@ class _ModalAnuncioState extends State<ModalAnuncio> {
                 child: const Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.videogame_asset, size: 48, color: Colors.cyanAccent),
+                    Icon(
+                      Icons.videogame_asset,
+                      size: 48,
+                      color: Colors.cyanAccent,
+                    ),
                     SizedBox(height: 8),
                     Text(
                       'Anuncio Simulado',
@@ -135,7 +146,11 @@ class _ModalAnuncioState extends State<ModalAnuncio> {
                     foregroundColor: Colors.white,
                   ),
                   onPressed: _segundosRestantes == 0 ? _cerrarYReiniciar : null,
-                  child: Text(_segundosRestantes == 0 ? 'CERRAR Y REINICIAR' : 'ESPERE...'),
+                  child: Text(
+                    _segundosRestantes == 0
+                        ? 'CERRAR Y REINICIAR'
+                        : 'ESPERE...',
+                  ),
                 ),
               ),
             ],

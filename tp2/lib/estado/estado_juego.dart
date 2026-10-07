@@ -1,8 +1,11 @@
 import 'dart:math';
-import 'package:flutter/material.dart';
+
+import 'package:material_ui/material_ui.dart';
+
 import '../core/constantes.dart';
 
 enum AccountType { basic, pro }
+
 typedef TipoCuenta = AccountType;
 
 enum TipoArma { espada, arco, magia }
@@ -26,9 +29,12 @@ class EstadoJuego extends ChangeNotifier {
   }
 
   void switchAccountType() {
-    accountType = accountType == AccountType.basic ? AccountType.pro : AccountType.basic;
+    accountType = accountType == AccountType.basic
+        ? AccountType.pro
+        : AccountType.basic;
     notificarSeguro();
   }
+
   void alternarTipoCuenta() => switchAccountType();
 
   // Apariencia
@@ -38,10 +44,12 @@ class EstadoJuego extends ChangeNotifier {
     modoOscuro = value;
     notificarSeguro();
   }
+
   void alternarTema() {
     modoOscuro = !modoOscuro;
     notificarSeguro();
   }
+
   void toggleTheme() => alternarTema();
 
   // Ciclo de vida
@@ -64,6 +72,7 @@ class EstadoJuego extends ChangeNotifier {
     tiendaMinuto5Mostrada = false;
     notificarSeguro();
   }
+
   void startGame() => iniciarPartida();
 
   void pausarPartida() {
@@ -71,6 +80,7 @@ class EstadoJuego extends ChangeNotifier {
     enPausa = true;
     notificarSeguro();
   }
+
   void pauseGame() => pausarPartida();
 
   void reanudarPartida() {
@@ -78,6 +88,7 @@ class EstadoJuego extends ChangeNotifier {
     enPausa = false;
     notificarSeguro();
   }
+
   void resumeGame() => reanudarPartida();
 
   void asignarArmaInicialAleatoria() {
@@ -92,7 +103,9 @@ class EstadoJuego extends ChangeNotifier {
     } else {
       nivelMagia = 1;
     }
-    debugPrint('[DEBUG_ESTADO] Arma inicial asignada - Espada: $nivelEspada, Arco: $nivelArco, Magia: $nivelMagia');
+    debugPrint(
+      '[DEBUG_ESTADO] Arma inicial asignada - Espada: $nivelEspada, Arco: $nivelArco, Magia: $nivelMagia',
+    );
   }
 
   void reiniciarPartida() {
@@ -110,12 +123,16 @@ class EstadoJuego extends ChangeNotifier {
     finPartida = false;
     iniciarPartida();
   }
+
   void resetGame() => reiniciarPartida();
 
   void terminarPartida() {
     enJuego = false;
     finPartida = true;
-    diamantesRecolectados = max(0, diamantesRecolectados - GameConstants.penalizacionDiamantesMuerte);
+    diamantesRecolectados = max(
+      0,
+      diamantesRecolectados - GameConstants.penalizacionDiamantesMuerte,
+    );
     notificarSeguro();
   }
 
@@ -146,11 +163,15 @@ class EstadoJuego extends ChangeNotifier {
     diamantesComprados += cantidad;
     notificarSeguro();
   }
+
   void buyDiamonds(int amount) => simularCompraIAP(amount);
 
   void dropDiamante() {
-    final ganancia = GameConstants.dropMinDiamantes +
-        _random.nextInt(GameConstants.dropMaxDiamantes - GameConstants.dropMinDiamantes + 1);
+    final ganancia =
+        GameConstants.dropMinDiamantes +
+        _random.nextInt(
+          GameConstants.dropMaxDiamantes - GameConstants.dropMinDiamantes + 1,
+        );
     diamantesRecolectados += ganancia;
     puntaje += 15;
     notificarSeguro();
@@ -164,7 +185,8 @@ class EstadoJuego extends ChangeNotifier {
   double vidaActual = 100.0;
   double velocidadMovimiento = 150.0;
 
-  double get damageMultiplier => 1.0 + (nivelEspada + nivelArco + nivelMagia - 3) * 0.15;
+  double get damageMultiplier =>
+      1.0 + (nivelEspada + nivelArco + nivelMagia - 3) * 0.15;
 
   void aplicarDanioJugador(double cantidad) {
     vidaActual -= cantidad;
@@ -255,7 +277,9 @@ class EstadoJuego extends ChangeNotifier {
       subirNivelArma(TipoArma.espada);
     } else if (str.contains('arco') || str.contains('bow')) {
       subirNivelArma(TipoArma.arco);
-    } else if (str.contains('magia') || str.contains('fire') || str.contains('magic')) {
+    } else if (str.contains('magia') ||
+        str.contains('fire') ||
+        str.contains('magic')) {
       subirNivelArma(TipoArma.magia);
     }
   }
@@ -281,7 +305,8 @@ class EstadoJuego extends ChangeNotifier {
     return true;
   }
 
-  bool purchaseStatUpgrade(String stat, int cost) => comprarMejoraTienda(stat, cost);
+  bool purchaseStatUpgrade(String stat, int cost) =>
+      comprarMejoraTienda(stat, cost);
 
   void notificarSeguro() {
     WidgetsBinding.instance.addPostFrameCallback((_) {

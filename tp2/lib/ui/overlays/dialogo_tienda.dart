@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
+
 import '../../estado/estado_juego.dart';
 
 class DialogoTienda extends StatelessWidget {
@@ -24,7 +25,11 @@ class DialogoTienda extends StatelessWidget {
               children: [
                 const Row(
                   children: [
-                    Icon(Icons.shopping_bag, color: Colors.cyanAccent, size: 24),
+                    Icon(
+                      Icons.shopping_bag,
+                      color: Colors.cyanAccent,
+                      size: 24,
+                    ),
                     SizedBox(width: 8),
                     Text(
                       'COMPRA DE DIAMANTES',
@@ -110,7 +115,9 @@ class DialogoTienda extends StatelessWidget {
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: destacado ? Colors.cyanAccent : Colors.blueGrey.shade700,
+              backgroundColor: destacado
+                  ? Colors.cyanAccent
+                  : Colors.blueGrey.shade700,
               foregroundColor: destacado ? Colors.black : Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             ),

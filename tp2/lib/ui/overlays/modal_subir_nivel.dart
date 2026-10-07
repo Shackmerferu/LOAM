@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
+
 import '../../core/constantes.dart';
 import '../../estado/estado_juego.dart';
 import '../../juego/juego_supervivencia.dart';
@@ -20,7 +21,7 @@ class ModalSubirNivel extends StatelessWidget {
         margin: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
         padding: const EdgeInsets.all(20.0),
         decoration: BoxDecoration(
-          color: const Color(0xFF1E1E2E).withOpacity(0.96),
+          color: const Color(0xFF1E1E2E).withValues(alpha: 0.96),
           borderRadius: BorderRadius.circular(24.0),
           border: Border.all(color: Colors.amberAccent, width: 2.5),
           boxShadow: const [
@@ -78,7 +79,8 @@ class ModalSubirNivel extends StatelessWidget {
                 nivelActual: estadoJuego.fireMagicLevel,
                 icono: Icons.local_fire_department,
                 colorTema: Colors.deepOrangeAccent,
-                descripcionBase: 'Dispara bolas de fuego concentrado de alto impacto.',
+                descripcionBase:
+                    'Dispara bolas de fuego concentrado de alto impacto.',
                 nombreEvolucion: 'Llamarada Creciente Continua',
                 onSeleccionar: () => _aplicarMejora('fireMagic'),
               ),
@@ -99,7 +101,8 @@ class ModalSubirNivel extends StatelessWidget {
     required String nombreEvolucion,
     required VoidCallback onSeleccionar,
   }) {
-    final esEvolucionSiguiente = nivelActual == GameConstants.maxWeaponLevel - 1;
+    final esEvolucionSiguiente =
+        nivelActual == GameConstants.maxWeaponLevel - 1;
     final esNivelMaximo = nivelActual >= GameConstants.maxWeaponLevel;
 
     return Container(
@@ -107,7 +110,9 @@ class ModalSubirNivel extends StatelessWidget {
         color: const Color(0xFF2A2A3E),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: esEvolucionSiguiente ? Colors.amberAccent : colorTema.withOpacity(0.4),
+          color: esEvolucionSiguiente
+              ? Colors.amberAccent
+              : colorTema.withValues(alpha: 0.4),
           width: esEvolucionSiguiente ? 2.0 : 1.0,
         ),
       ),
@@ -122,7 +127,7 @@ class ModalSubirNivel extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 24,
-                  backgroundColor: colorTema.withOpacity(0.2),
+                  backgroundColor: colorTema.withValues(alpha: 0.2),
                   child: Icon(icono, color: colorTema, size: 26),
                 ),
                 const SizedBox(width: 14),
@@ -142,15 +147,24 @@ class ModalSubirNivel extends StatelessWidget {
                             ),
                           ),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 2,
+                            ),
                             decoration: BoxDecoration(
-                              color: esNivelMaximo ? Colors.amber.shade700 : Colors.black45,
+                              color: esNivelMaximo
+                                  ? Colors.amber.shade700
+                                  : Colors.black45,
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
-                              esNivelMaximo ? 'MAX' : 'Nv. $nivelActual → ${nivelActual + 1}',
+                              esNivelMaximo
+                                  ? 'MAX'
+                                  : 'Nv. $nivelActual → ${nivelActual + 1}',
                               style: TextStyle(
-                                color: esNivelMaximo ? Colors.black : Colors.white,
+                                color: esNivelMaximo
+                                    ? Colors.black
+                                    : Colors.white,
                                 fontSize: 11,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -180,7 +194,10 @@ class ModalSubirNivel extends StatelessWidget {
                       ] else ...[
                         Text(
                           descripcionBase,
-                          style: const TextStyle(color: Colors.white60, fontSize: 12),
+                          style: const TextStyle(
+                            color: Colors.white60,
+                            fontSize: 12,
+                          ),
                         ),
                       ],
                     ],

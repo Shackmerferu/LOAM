@@ -1,15 +1,14 @@
 import 'dart:math';
+
 import 'package:flame/components.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
+
 import '../componentes/enemigo.dart';
 import 'arma_base.dart';
 
 class Espada extends ArmaBase {
   Espada({required super.estadoJuego})
-      : super(
-    intervaloAtaque: 1.2,
-    danioBase: 35.0,
-  );
+    : super(intervaloAtaque: 1.2, danioBase: 35.0);
 
   @override
   int get nivel => estadoJuego.swordLevel;
@@ -20,7 +19,12 @@ class Espada extends ArmaBase {
 
     if (!estaMejorada) {
       const radioCorte = 95.0;
-      game.world.add(EfectoCorteCircular(posicion: jugador.position.clone(), radio: radioCorte));
+      game.world.add(
+        EfectoCorteCircular(
+          posicion: jugador.position.clone(),
+          radio: radioCorte,
+        ),
+      );
 
       final enemigos = game.world.children.whereType<Enemigo>();
       for (final enemigo in enemigos) {
@@ -66,11 +70,11 @@ class EfectoCorteCircular extends PositionComponent {
   double _progreso = 0.0;
 
   EfectoCorteCircular({required Vector2 posicion, required this.radio})
-      : super(
-    position: posicion,
-    size: Vector2.all(radio * 2),
-    anchor: Anchor.center,
-  );
+    : super(
+        position: posicion,
+        size: Vector2.all(radio * 2),
+        anchor: Anchor.center,
+      );
 
   @override
   void update(double dt) {
@@ -107,10 +111,7 @@ class EfectoCorteDimensional extends PositionComponent {
     required Vector2 posicion,
     required this.angulo,
     required this.longitud,
-  }) : super(
-    position: posicion,
-    anchor: Anchor.center,
-  );
+  }) : super(position: posicion, anchor: Anchor.center);
 
   @override
   void update(double dt) {

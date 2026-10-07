@@ -1,7 +1,8 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
+
 import '../../core/constantes.dart';
 import '../../estado/estado_juego.dart';
 import '../juego_supervivencia.dart';
@@ -18,10 +19,7 @@ class Jugador extends SpriteAnimationGroupComponent<EstadoJugador>
   static const double _tiempoInmunidad = 0.5;
 
   Jugador({required this.estadoJuego})
-      : super(
-    size: Vector2(48, 48),
-    anchor: Anchor.center,
-  );
+    : super(size: Vector2(48, 48), anchor: Anchor.center);
 
   void mover(Vector2 delta) {
     if (_estaMuerto) return;
@@ -32,14 +30,36 @@ class Jugador extends SpriteAnimationGroupComponent<EstadoJugador>
   Future<void> onLoad() async {
     super.onLoad();
     position = game.size.isZero() ? Vector2(200, 400) : game.size / 2;
-    debugPrint('[DEBUG_JUGADOR] onLoad() iniciado, posición inicial: $position');
+    debugPrint(
+      '[DEBUG_JUGADOR] onLoad() iniciado, posición inicial: $position',
+    );
 
     animations = {
-      EstadoJugador.quieto: await _cargarAnimacion('personajes/jugador_quieto.png', 4, 0.2),
-      EstadoJugador.caminando: await _cargarAnimacion('personajes/jugador_caminar.png', 6, 0.12),
-      EstadoJugador.danio: await _cargarAnimacion('personajes/jugador_herido.png', 4, 0.08),
-      EstadoJugador.muerte: await _cargarAnimacion('personajes/jugador_muerte.png', 4, 0.1),
-      EstadoJugador.subirNivel: await _cargarAnimacion('personajes/jugador_levelup.png', 4, 0.1),
+      EstadoJugador.quieto: await _cargarAnimacion(
+        'personajes/jugador_quieto.png',
+        4,
+        0.2,
+      ),
+      EstadoJugador.caminando: await _cargarAnimacion(
+        'personajes/jugador_caminar.png',
+        6,
+        0.12,
+      ),
+      EstadoJugador.danio: await _cargarAnimacion(
+        'personajes/jugador_herido.png',
+        4,
+        0.08,
+      ),
+      EstadoJugador.muerte: await _cargarAnimacion(
+        'personajes/jugador_muerte.png',
+        4,
+        0.1,
+      ),
+      EstadoJugador.subirNivel: await _cargarAnimacion(
+        'personajes/jugador_levelup.png',
+        4,
+        0.1,
+      ),
     };
 
     current = EstadoJugador.quieto;
@@ -47,7 +67,11 @@ class Jugador extends SpriteAnimationGroupComponent<EstadoJugador>
     debugPrint('[DEBUG_JUGADOR] Sprites del jugador cargados correctamente');
   }
 
-  Future<SpriteAnimation> _cargarAnimacion(String path, int amount, double stepTime) async {
+  Future<SpriteAnimation> _cargarAnimacion(
+    String path,
+    int amount,
+    double stepTime,
+  ) async {
     final image = await game.images.load(path);
     final spriteSheet = SpriteSheet(image: image, srcSize: Vector2(32, 32));
     return spriteSheet.createAnimation(row: 0, stepTime: stepTime, to: amount);
@@ -87,7 +111,9 @@ class Jugador extends SpriteAnimationGroupComponent<EstadoJugador>
       if (current != EstadoJugador.danio) {
         current = EstadoJugador.caminando;
       }
-      position.add(direccionMovimiento.normalized() * estadoJuego.velocidadMovimiento * dt);
+      position.add(
+        direccionMovimiento.normalized() * estadoJuego.velocidadMovimiento * dt,
+      );
 
       if (direccionMovimiento.x < 0 && scale.x > 0) {
         flipHorizontally();
@@ -114,9 +140,15 @@ class Jugador extends SpriteAnimationGroupComponent<EstadoJugador>
     const anchoBarra = 36.0;
     const altoBarra = 4.0;
     final x = (size.x - anchoBarra) / 2;
-    final pctVida = (estadoJuego.vidaActual / estadoJuego.vidaMax).clamp(0.0, 1.0);
+    final pctVida = (estadoJuego.vidaActual / estadoJuego.vidaMax).clamp(
+      0.0,
+      1.0,
+    );
 
-    canvas.drawRect(Rect.fromLTWH(x, -10, anchoBarra, altoBarra), Paint()..color = Colors.black87);
+    canvas.drawRect(
+      Rect.fromLTWH(x, -10, anchoBarra, altoBarra),
+      Paint()..color = Colors.black87,
+    );
     canvas.drawRect(
       Rect.fromLTWH(x, -10, anchoBarra * pctVida, altoBarra),
       Paint()..color = const Color(0xFF00E676),

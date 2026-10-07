@@ -1,9 +1,11 @@
 import 'package:flame/components.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
+
 import '../../estado/estado_juego.dart';
 import '../juego_supervivencia.dart';
 
-class Diamante extends SpriteComponent with HasGameReference<JuegoSupervivencia> {
+class Diamante extends SpriteComponent
+    with HasGameReference<JuegoSupervivencia> {
   final EstadoJuego estadoJuego;
 
   static const double radioIman = 140.0;
@@ -12,14 +14,12 @@ class Diamante extends SpriteComponent with HasGameReference<JuegoSupervivencia>
 
   bool _spritesCargados = false;
 
-  Diamante({
-    required this.estadoJuego,
-    required Vector2 posicionInicial,
-  }) : super(
-    position: posicionInicial,
-    size: Vector2(24, 24),
-    anchor: Anchor.center,
-  );
+  Diamante({required this.estadoJuego, required Vector2 posicionInicial})
+    : super(
+        position: posicionInicial,
+        size: Vector2(24, 24),
+        anchor: Anchor.center,
+      );
 
   @override
   Future<void> onLoad() async {
@@ -52,7 +52,8 @@ class Diamante extends SpriteComponent with HasGameReference<JuegoSupervivencia>
   @override
   void update(double dt) {
     super.update(dt);
-    if (!estadoJuego.enJuego || estadoJuego.enPausa || estadoJuego.finPartida) return;
+    if (!estadoJuego.enJuego || estadoJuego.enPausa || estadoJuego.finPartida)
+      return;
 
     final posJugador = game.jugador.position;
     final dist = position.distanceTo(posJugador);

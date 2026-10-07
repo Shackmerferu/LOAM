@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
+
 import '../../estado/estado_juego.dart';
 import '../overlays/dialogo_tienda.dart';
 
@@ -14,8 +15,14 @@ class CabeceraJuego extends StatelessWidget {
       builder: (context, _) {
         final isDark = estadoJuego.isDarkMode;
         final theme = Theme.of(context);
-        final minutos = (estadoJuego.gameTime / 60).floor().toString().padLeft(2, '0');
-        final segundos = (estadoJuego.gameTime % 60).floor().toString().padLeft(2, '0');
+        final minutos = (estadoJuego.gameTime / 60).floor().toString().padLeft(
+          2,
+          '0',
+        );
+        final segundos = (estadoJuego.gameTime % 60).floor().toString().padLeft(
+          2,
+          '0',
+        );
 
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -45,7 +52,11 @@ class CabeceraJuego extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.person, size: 20, color: isDark ? Colors.white70 : Colors.black87),
+                        Icon(
+                          Icons.person,
+                          size: 20,
+                          color: isDark ? Colors.white70 : Colors.black87,
+                        ),
                         const SizedBox(width: 6),
                         Text(
                           estadoJuego.username,
@@ -58,7 +69,10 @@ class CabeceraJuego extends StatelessWidget {
                         GestureDetector(
                           onTap: estadoJuego.switchAccountType,
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
                             decoration: BoxDecoration(
                               color: estadoJuego.accountType == AccountType.pro
                                   ? Colors.amber.shade700
@@ -66,7 +80,9 @@ class CabeceraJuego extends StatelessWidget {
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Text(
-                              estadoJuego.accountType == AccountType.pro ? 'PRO' : 'BASIC',
+                              estadoJuego.accountType == AccountType.pro
+                                  ? 'PRO'
+                                  : 'BASIC',
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 10,
@@ -111,11 +127,15 @@ class CabeceraJuego extends StatelessWidget {
                       onTap: () {
                         showDialog(
                           context: context,
-                          builder: (_) => DialogoTienda(estadoJuego: estadoJuego),
+                          builder: (_) =>
+                              DialogoTienda(estadoJuego: estadoJuego),
                         );
                       },
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.cyan.shade900.withValues(alpha: 0.3),
                           borderRadius: BorderRadius.circular(12),
@@ -123,7 +143,11 @@ class CabeceraJuego extends StatelessWidget {
                         ),
                         child: Row(
                           children: [
-                            const Icon(Icons.diamond, color: Colors.cyanAccent, size: 16),
+                            const Icon(
+                              Icons.diamond,
+                              color: Colors.cyanAccent,
+                              size: 16,
+                            ),
                             const SizedBox(width: 4),
                             Text(
                               '${estadoJuego.diamonds}',
@@ -133,7 +157,11 @@ class CabeceraJuego extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(width: 4),
-                            const Icon(Icons.add_circle, color: Colors.greenAccent, size: 14),
+                            const Icon(
+                              Icons.add_circle,
+                              color: Colors.greenAccent,
+                              size: 14,
+                            ),
                           ],
                         ),
                       ),

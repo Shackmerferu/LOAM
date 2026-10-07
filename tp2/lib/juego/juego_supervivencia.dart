@@ -1,8 +1,10 @@
 import 'dart:math';
+
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
+
 import '../core/constantes.dart';
 import '../estado/estado_juego.dart';
 import 'armas/arco.dart';
@@ -24,20 +26,34 @@ class FondoCuadricula extends Component {
   void render(Canvas canvas) {
     super.render(canvas);
     canvas.drawRect(
-      const Rect.fromLTWH(-tamanoMundo / 2, -tamanoMundo / 2, tamanoMundo, tamanoMundo),
+      const Rect.fromLTWH(
+        -tamanoMundo / 2,
+        -tamanoMundo / 2,
+        tamanoMundo,
+        tamanoMundo,
+      ),
       Paint()..color = const Color(0xFF131022),
     );
 
     for (double x = -tamanoMundo / 2; x <= tamanoMundo / 2; x += tamanoCelda) {
-      canvas.drawLine(Offset(x, -tamanoMundo / 2), Offset(x, tamanoMundo / 2), _paintLinea);
+      canvas.drawLine(
+        Offset(x, -tamanoMundo / 2),
+        Offset(x, tamanoMundo / 2),
+        _paintLinea,
+      );
     }
     for (double y = -tamanoMundo / 2; y <= tamanoMundo / 2; y += tamanoCelda) {
-      canvas.drawLine(Offset(-tamanoMundo / 2, y), Offset(tamanoMundo / 2, y), _paintLinea);
+      canvas.drawLine(
+        Offset(-tamanoMundo / 2, y),
+        Offset(tamanoMundo / 2, y),
+        _paintLinea,
+      );
     }
   }
 }
 
-class JuegoSupervivencia extends FlameGame with HasCollisionDetection, DragCallbacks {
+class JuegoSupervivencia extends FlameGame
+    with HasCollisionDetection, DragCallbacks {
   final EstadoJuego estadoJuego;
   late final Jugador jugador;
 
@@ -80,7 +96,9 @@ class JuegoSupervivencia extends FlameGame with HasCollisionDetection, DragCallb
 
     jugador = Jugador(estadoJuego: estadoJuego);
     await world.add(jugador);
-    debugPrint('[DEBUG_JUEGO] Jugador añadido al mundo en posición: ${jugador.position}');
+    debugPrint(
+      '[DEBUG_JUEGO] Jugador añadido al mundo en posición: ${jugador.position}',
+    );
 
     estadoJuego.asignarArmaInicialAleatoria();
     _inicializarArmaActual();
@@ -102,11 +120,13 @@ class JuegoSupervivencia extends FlameGame with HasCollisionDetection, DragCallb
       const double distancia = 380.0;
       final spawn = Vector2(cos(angulo) * distancia, sin(angulo) * distancia);
 
-      world.add(Enemigo(
-        tipo: TipoMonstruo.limo,
-        estadoJuego: estadoJuego,
-        posicionInicial: spawn,
-      ));
+      world.add(
+        Enemigo(
+          tipo: TipoMonstruo.limo,
+          estadoJuego: estadoJuego,
+          posicionInicial: spawn,
+        ),
+      );
     }
   }
 
@@ -123,7 +143,9 @@ class JuegoSupervivencia extends FlameGame with HasCollisionDetection, DragCallb
   @override
   void onDragUpdate(DragUpdateEvent event) {
     super.onDragUpdate(event);
-    if (estadoJuego.enJuego && !estadoJuego.enPausa && !estadoJuego.finPartida) {
+    if (estadoJuego.enJuego &&
+        !estadoJuego.enPausa &&
+        !estadoJuego.finPartida) {
       if (_estaArrastrando) {
         _vectorDrag += event.localDelta;
         if (_vectorDrag.length > 2.0) {
@@ -152,15 +174,18 @@ class JuegoSupervivencia extends FlameGame with HasCollisionDetection, DragCallb
   @override
   void update(double dt) {
     super.update(dt);
-    if (!estadoJuego.enJuego || estadoJuego.enPausa || estadoJuego.finPartida) return;
+    if (!estadoJuego.enJuego || estadoJuego.enPausa || estadoJuego.finPartida)
+      return;
 
-    if (estadoJuego.swordLevel > 0 && world.children.whereType<Espada>().isEmpty) {
+    if (estadoJuego.swordLevel > 0 &&
+        world.children.whereType<Espada>().isEmpty) {
       world.add(Espada(estadoJuego: estadoJuego));
     }
     if (estadoJuego.bowLevel > 0 && world.children.whereType<Arco>().isEmpty) {
       world.add(Arco(estadoJuego: estadoJuego));
     }
-    if (estadoJuego.fireMagicLevel > 0 && world.children.whereType<MagiaFuego>().isEmpty) {
+    if (estadoJuego.fireMagicLevel > 0 &&
+        world.children.whereType<MagiaFuego>().isEmpty) {
       world.add(MagiaFuego(estadoJuego: estadoJuego));
     }
 
@@ -180,14 +205,22 @@ class JuegoSupervivencia extends FlameGame with HasCollisionDetection, DragCallb
   }
 
   void _regularHorda() {
-    final cantidadActual = world.children.whereType<Enemigo>().where((e) => e.current != EstadoEnemigo.muriendo).length;
+    final cantidadActual = world.children
+        .whereType<Enemigo>()
+        .where((e) => e.current != EstadoEnemigo.muriendo)
+        .length;
     if (cantidadActual >= GameConstants.maxEnemigos) return;
 
     final faltantes = GameConstants.minEnemigos - cantidadActual;
     final porGenerar = faltantes > 0 ? faltantes.clamp(1, 3) : 1;
 
     for (int i = 0; i < porGenerar; i++) {
-      if (world.children.whereType<Enemigo>().where((e) => e.current != EstadoEnemigo.muriendo).length >= GameConstants.maxEnemigos) break;
+      if (world.children
+              .whereType<Enemigo>()
+              .where((e) => e.current != EstadoEnemigo.muriendo)
+              .length >=
+          GameConstants.maxEnemigos)
+        break;
 
       final angulo = _random.nextDouble() * 2 * pi;
       const double distancia = 400.0;
@@ -204,16 +237,17 @@ class JuegoSupervivencia extends FlameGame with HasCollisionDetection, DragCallb
         tipo = TipoMonstruo.esqueleto;
       }
 
-      world.add(Enemigo(
-        tipo: tipo,
-        estadoJuego: estadoJuego,
-        posicionInicial: spawn,
-      ));
+      world.add(
+        Enemigo(tipo: tipo, estadoJuego: estadoJuego, posicionInicial: spawn),
+      );
     }
   }
 
   void respawnEnemigoTrasMuerte() {
-    final cantidadActual = world.children.whereType<Enemigo>().where((e) => e.current != EstadoEnemigo.muriendo).length;
+    final cantidadActual = world.children
+        .whereType<Enemigo>()
+        .where((e) => e.current != EstadoEnemigo.muriendo)
+        .length;
     if (cantidadActual >= GameConstants.maxEnemigos) return;
 
     final angulo = _random.nextDouble() * 2 * pi;
@@ -233,11 +267,9 @@ class JuegoSupervivencia extends FlameGame with HasCollisionDetection, DragCallb
       tipo = TipoMonstruo.miniGolem;
     }
 
-    world.add(Enemigo(
-      tipo: tipo,
-      estadoJuego: estadoJuego,
-      posicionInicial: spawn,
-    ));
+    world.add(
+      Enemigo(tipo: tipo, estadoJuego: estadoJuego, posicionInicial: spawn),
+    );
   }
 
   void activarSubidaNivel() {
