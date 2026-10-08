@@ -6,10 +6,6 @@ import '../juego_supervivencia.dart';
 import 'arma_base.dart';
 
 class Arco extends ArmaBase {
-  SpriteComponent? _visual;
-  String? _rutaVisual;
-  Vector2 _dirActual = Vector2(1, 0);
-
   Arco({required super.estadoJuego})
       : super(
     intervaloAtaque: 1.0,
