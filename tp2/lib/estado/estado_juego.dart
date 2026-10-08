@@ -139,6 +139,19 @@ class EstadoJuego extends ChangeNotifier {
     notificarSeguro();
   }
 
+  /// Deja el estado limpio para volver al menú de inicio; el marcador de la
+  /// partida recién finalizada se reinicia al comenzar una nueva partida.
+  void volverAlMenu() {
+    debugPrint('[DEBUG_ESTADO] volverAlMenu() llamado');
+    enJuego = false;
+    enPausa = false;
+    finPartida = false;
+    victoria = false;
+    tiendaMostrada = false;
+    notificarSeguro();
+  }
+  void goToMenu() => volverAlMenu();
+
   void ganarPartida() {
     debugPrint('[DEBUG_ESTADO] ganarPartida() llamado - 5 minutos completados');
     enJuego = false;

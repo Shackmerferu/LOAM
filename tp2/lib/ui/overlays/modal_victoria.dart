@@ -73,12 +73,36 @@ class ModalVictoria extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              const Text(
-                'Presiona "Reiniciar" en la botonera inferior para volver a jugar.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white60,
-                  fontSize: 12,
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  style: FilledButton.styleFrom(
+                    backgroundColor: Colors.amberAccent,
+                    foregroundColor: const Color(0xFF1E1A2E),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                  onPressed: () {
+                    // Reinicio total de la partida desde fuera del juego.
+                    juego.reiniciar();
+                  },
+                  child: const Text('JUGAR DE NUEVO'),
+                ),
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.white70,
+                    side: const BorderSide(color: Colors.white24),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                  onPressed: () {
+                    juego.overlays.clear();
+                    estadoJuego.volverAlMenu();
+                    Navigator.of(context).maybePop();
+                  },
+                  child: const Text('Volver al inicio'),
                 ),
               ),
             ],

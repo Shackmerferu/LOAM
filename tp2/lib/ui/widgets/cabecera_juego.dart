@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import '../../estado/estado_juego.dart';
+import '../../juego/juego_supervivencia.dart';
 import '../overlays/dialogo_tienda.dart';
 
 class CabeceraJuego extends StatelessWidget {
   final GameState estadoJuego;
+  final JuegoSupervivencia juego;
 
-  const CabeceraJuego({super.key, required this.estadoJuego});
+  const CabeceraJuego({
+    super.key,
+    required this.estadoJuego,
+    required this.juego,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -16,6 +22,36 @@ class CabeceraJuego extends StatelessWidget {
         final theme = Theme.of(context);
         final minutos = (estadoJuego.gameTime / 60).floor().toString().padLeft(2, '0');
         final segundos = (estadoJuego.gameTime % 60).floor().toString().padLeft(2, '0');
+
+        // La pausa solo se activa/desactiva desde este ícono cuando no hay
+        // otro modal (tienda, subir nivel, anuncio) que ya esté pausando el juego.
+        final pausaActiva = juego.overlays.isActive('Pausa');
+        final puedePausar = estadoJuego.isPlaying &&
+            !estadoJuego.isGameOver &&
+            !estadoJuego.isVictory &&
+            !estadoJuego.isPaused;
+
+        Widget botonControl({
+          required IconData icono,
+          required String tooltip,
+          required Color color,
+          required VoidCallback? onPressed,
+        }) {
+          return IconButton(
+            tooltip: tooltip,
+            iconSize: 20,
+            constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+            padding: EdgeInsets.zero,
+            icon: Icon(
+              icono,
+              size: 20,
+              color: onPressed == null
+                  ? color.withValues(alpha: 0.35)
+                  : color,
+            ),
+            onPressed: onPressed,
+          );
+        }
 
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -82,6 +118,22 @@ class CabeceraJuego extends StatelessWidget {
                         ],
                       ),
                     ),
+                    botonControl(
+                      icono: pausaActiva ? Icons.play_arrow : Icons.pause,
+                      tooltip: pausaActiva ? 'Reanudar' : 'Pausa',
+                      color: pausaActiva ? Colors.greenAccent : Colors.amber.shade700,
+                      onPressed: pausaActiva
+                          ? () {
+                              juego.overlays.remove('Pausa');
+                              estadoJuego.reanudarPartida();
+                            }
+                          : puedePausar
+                              ? () {
+                                  estadoJuego.pausarPartida();
+                                  juego.overlays.add('Pausa');
+                                }
+                              : null,
+                    ),
                     IconButton(
                       icon: Icon(
                         isDark ? Icons.light_mode : Icons.dark_mode,
@@ -113,11 +165,21 @@ class CabeceraJuego extends StatelessWidget {
                       ),
                     ),
                     GestureDetector(
-                      onTap: () {
-                        showDialog(
+                      onTap: () async {
+                        // La tienda de diamantes congela la partida mientras
+                        // está abierta; solo se reanuda si nosotros la pausamos.
+                        final debePausar =
+                            estadoJuego.isPlaying && !estadoJuego.isPaused;
+                        if (debePausar) {
+                          estadoJuego.pausarPartida();
+                        }
+                        await showDialog(
                           context: context,
                           builder: (_) => DialogoTienda(estadoJuego: estadoJuego),
                         );
+                        if (debePausar) {
+                          estadoJuego.reanudarPartida();
+                        }
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),

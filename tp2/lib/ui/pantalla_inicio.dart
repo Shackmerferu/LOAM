@@ -10,10 +10,13 @@ class PantallaInicio extends StatelessWidget {
 
   void _iniciar(BuildContext context) {
     final estado = context.read<EstadoJuego>();
-    estado.iniciarPartida();
-    Navigator.of(
-      context,
-    ).pushReplacement(MaterialPageRoute(builder: (_) => const PantallaJuego()));
+    // Nueva partida siempre arranca de cero (tiempo, puntaje y armas).
+    estado.reiniciarPartida();
+    // Se usa push (y no pushReplacement) para que el botón "Volver al inicio"
+    // del header pueda volver a esta pantalla con Navigator.pop().
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const PantallaJuego()),
+    );
   }
 
   @override
@@ -81,16 +84,16 @@ class PantallaInicio extends StatelessWidget {
                       children: [
                         _Instruccion(
                           icono: Icons.touch_app,
-                          texto: 'Arrastra el dedo para mover al personaje.',
+                          texto: 'Arrastra el dedo para mover al personaje. ',
                         ),
                         _Instruccion(
                           icono: Icons.auto_awesome,
                           texto:
-                              'Las armas atacan solas. ¡Sobreviví lo máximo!',
+                              'Las armas disparan solas. Intenta sobrevivir lo mas que puedas!',
                         ),
                         _Instruccion(
                           icono: Icons.diamond,
-                          texto: 'Recogé diamantes para comprar mejoras.',
+                          texto: 'Recogé diamantes para comprar mejoras con el comerciante.',
                         ),
                       ],
                     ),

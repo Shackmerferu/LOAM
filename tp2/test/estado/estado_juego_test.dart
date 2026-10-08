@@ -54,4 +54,34 @@ void main() {
       expect(estado.velocidadMovimiento, 150);
     });
   });
+
+  group('volver al menú de inicio', () {
+    test('limpia el ciclo de vida de la partida', () {
+      final estado = EstadoJuego();
+      estado.pausarPartida();
+      expect(estado.isPaused, isTrue);
+
+      estado.volverAlMenu();
+
+      expect(estado.isPlaying, isFalse);
+      expect(estado.isPaused, isFalse);
+      expect(estado.isGameOver, isFalse);
+      expect(estado.isVictory, isFalse);
+    });
+
+    test('borra game over y victoria para poder iniciar otra partida', () {
+      final estado = EstadoJuego();
+      estado.terminarPartida();
+      expect(estado.isGameOver, isTrue);
+
+      estado.volverAlMenu();
+      expect(estado.isGameOver, isFalse);
+
+      estado.ganarPartida();
+      expect(estado.isVictory, isTrue);
+
+      estado.volverAlMenu();
+      expect(estado.isVictory, isFalse);
+    });
+  });
 }

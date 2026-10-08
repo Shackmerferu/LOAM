@@ -75,6 +75,23 @@ class ModalPausa extends StatelessWidget {
                   child: const Text('Reiniciar'),
                 ),
               ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.white70,
+                    side: const BorderSide(color: Colors.white24),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                  onPressed: () {
+                    juego.overlays.clear();
+                    estadoJuego.volverAlMenu();
+                    Navigator.of(context).maybePop();
+                  },
+                  child: const Text('Volver al inicio'),
+                ),
+              ),
             ],
           ),
         ),

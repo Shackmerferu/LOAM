@@ -79,68 +79,16 @@ class _PantallaJuegoState extends State<PantallaJuego> {
                 },
               ),
             ),
-            // 2. Cabecera flotante arriba
+            // 2. Cabecera flotante arriba (contiene los controles fuera del
+            //    juego: pausa, reiniciar y volver al inicio)
             Positioned(
               top: 0,
               left: 0,
               right: 0,
-              child: CabeceraJuego(estadoJuego: estado),
-            ),
-            // 3. Botonera flotante abajo
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: _construirBotoneraExterna(estado),
+              child: CabeceraJuego(estadoJuego: estado, juego: _juego),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _construirBotoneraExterna(EstadoJuego estado) {
-    final colorFondo = estado.modoOscuro
-        ? GameConstants.superficieOscura
-        : GameConstants.superficieClara;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      color: colorFondo.withValues(alpha: 0.92),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          ElevatedButton.icon(
-            icon: Icon(estado.enPausa ? Icons.play_arrow : Icons.pause),
-            label: Text(estado.enPausa ? 'Reanudar' : 'Pausar'),
-            onPressed: !estado.enJuego
-                ? null
-                : () {
-                    if (estado.enPausa) {
-                      debugPrint('[DEBUG_UI] Botón Reanudar presionado');
-                      _juego.overlays.remove('Pausa');
-                      estado.reanudarPartida();
-                    } else {
-                      debugPrint('[DEBUG_UI] Botón Pausar presionado');
-                      estado.pausarPartida();
-                      _juego.overlays.add('Pausa');
-                    }
-                  },
-          ),
-          ElevatedButton.icon(
-            icon: const Icon(Icons.refresh),
-            label: const Text('Reiniciar'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.redAccent.shade700,
-            ),
-            onPressed: () {
-              debugPrint('[DEBUG_UI] Botón Reiniciar presionado');
-              _juego.overlays.clear();
-              estado.reiniciarPartida();
-              _juego.reiniciar();
-            },
-          ),
-        ],
       ),
     );
   }

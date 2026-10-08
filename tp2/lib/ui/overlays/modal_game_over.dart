@@ -47,10 +47,37 @@ class ModalGameOver extends StatelessWidget {
               const SizedBox(height: 8),
               _fila('Diamantes', '${estadoJuego.diamonds}'),
               const SizedBox(height: 18),
-              const Text(
-                'Toca «Reiniciar» para volver a intentarlo.',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.white60, fontSize: 12),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  style: FilledButton.styleFrom(
+                    backgroundColor: Colors.green.shade600,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                  onPressed: () {
+                    // Reinicio total de la partida desde fuera del juego.
+                    juego.reiniciar();
+                  },
+                  child: const Text('REINICIAR PARTIDA'),
+                ),
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.white70,
+                    side: const BorderSide(color: Colors.white24),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                  onPressed: () {
+                    juego.overlays.clear();
+                    estadoJuego.volverAlMenu();
+                    Navigator.of(context).maybePop();
+                  },
+                  child: const Text('Volver al inicio'),
+                ),
               ),
             ],
           ),
