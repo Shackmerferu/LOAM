@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flame/components.dart';
@@ -20,11 +21,12 @@ import 'componentes/trader.dart';
 
 class FondoGameplay extends Component
     with HasGameReference<JuegoSupervivencia> {
-  static const double tamanoMundo = 3000.0;
+  static const double _tamanoFondo = 12000.0;
   static const String _rutaImagen =
       'assets/Fondos/DFG_Free_Sampler_Preview_Ritual_Dark_Magic_1200.jpg';
 
   late final ui.Image _imagen;
+  late final Paint _pinturaFondo;
 
   @override
   Future<void> onLoad() async {
@@ -33,21 +35,44 @@ class FondoGameplay extends Component
     final codec = await ui.instantiateImageCodec(datos.buffer.asUint8List());
     _imagen = (await codec.getNextFrame()).image;
     codec.dispose();
+    _pinturaFondo = Paint()
+      ..filterQuality = ui.FilterQuality.high
+      ..shader = ui.ImageShader(
+        _imagen,
+        ui.TileMode.repeated,
+        ui.TileMode.repeated,
+        Float64List.fromList(const [
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+        ]),
+      );
   }
 
   @override
   void render(Canvas canvas) {
     super.render(canvas);
-    canvas.drawImageRect(
-      _imagen,
-      Rect.fromLTWH(0, 0, _imagen.width.toDouble(), _imagen.height.toDouble()),
+    canvas.drawRect(
       const Rect.fromLTWH(
-        -tamanoMundo / 2,
-        -tamanoMundo / 2,
-        tamanoMundo,
-        tamanoMundo,
+        -_tamanoFondo / 2,
+        -_tamanoFondo / 2,
+        _tamanoFondo,
+        _tamanoFondo,
       ),
-      Paint()..filterQuality = ui.FilterQuality.high,
+      _pinturaFondo,
     );
   }
 }
