@@ -61,6 +61,7 @@ flutter:
     - assets/images/monstruos/
     - assets/images/armas/
     - assets/images/items/
+    - assets/Fondos/
     - assets/anuncios/
 
   # The following line ensures that the Material Icons font is
