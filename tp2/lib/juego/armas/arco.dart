@@ -19,45 +19,12 @@ class Arco extends ArmaBase {
   @override
   int get nivel => estadoJuego.bowLevel;
 
-  @override
-  Future<void> onLoad() async {
-    await super.onLoad();
 
-    final ruta = estaMejorada ? 'armas/ballesta.png' : 'armas/arco.png';
-    _rutaVisual = ruta;
-    _visual = SpriteComponent(
-      sprite: Sprite(game.images.fromCache(ruta)),
-      size: Vector2.all(52.0),
-      anchor: Anchor.center,
-      priority: 10,
-    );
-    add(_visual!);
-  }
 
   @override
   void update(double dt) {
     intervaloAtaque = estaMejorada ? 0.45 : 1.0;
     super.update(dt);
-    _actualizarVisual();
-  }
-
-  void _actualizarVisual() {
-    final visual = _visual;
-    if (visual == null) return;
-
-    final jugador = game.jugador;
-
-    // Mismo concepto de seguimiento que la llamarada (solo el sprite):
-    // nace al fondo del sprite del jugador y gira con la última dirección.
-    _dirActual = jugador.ultimaDireccion;
-    visual.position = jugador.position + Vector2(0, jugador.size.y / 2);
-    visual.angle = atan2(_dirActual.y, _dirActual.x) + pi / 4;
-
-    final ruta = estaMejorada ? 'armas/ballesta.png' : 'armas/arco.png';
-    if (_rutaVisual != ruta) {
-      _rutaVisual = ruta;
-      visual.sprite = Sprite(game.images.fromCache(ruta));
-    }
   }
 
   @override
