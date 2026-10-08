@@ -7,6 +7,7 @@ import '../estado/estado_juego.dart';
 import '../juego/juego_supervivencia.dart';
 import 'overlays/modal_anuncio.dart';
 import 'overlays/modal_game_over.dart';
+import 'overlays/modal_pausa.dart';
 import 'overlays/modal_subir_nivel.dart';
 import 'overlays/modal_tienda.dart';
 import 'overlays/modal_victoria.dart';
@@ -63,6 +64,8 @@ class _PantallaJuegoState extends State<PantallaJuego> {
               child: GameWidget<JuegoSupervivencia>(
                 game: _juego,
                 overlayBuilderMap: {
+                  'Pausa': (ctx, game) =>
+                      ModalPausa(estadoJuego: estado, juego: game),
                   'ModalSubirNivel': (ctx, game) =>
                       ModalSubirNivel(estadoJuego: estado, juego: game),
                   'ModalTienda': (ctx, game) =>
@@ -115,10 +118,12 @@ class _PantallaJuegoState extends State<PantallaJuego> {
                 : () {
                     if (estado.enPausa) {
                       debugPrint('[DEBUG_UI] Botón Reanudar presionado');
+                      _juego.overlays.remove('Pausa');
                       estado.reanudarPartida();
                     } else {
                       debugPrint('[DEBUG_UI] Botón Pausar presionado');
                       estado.pausarPartida();
+                      _juego.overlays.add('Pausa');
                     }
                   },
           ),

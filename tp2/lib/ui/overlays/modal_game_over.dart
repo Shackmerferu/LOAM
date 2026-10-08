@@ -15,67 +15,67 @@ class ModalGameOver extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.black.withValues(alpha: 0.88),
+      color: Colors.black45,
       child: Center(
         child: Container(
-          width: 320,
-          padding: const EdgeInsets.all(24.0),
+          width: 300,
+          padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
           decoration: BoxDecoration(
-            color: const Color(0xFF1E1A2E),
-            borderRadius: BorderRadius.circular(20.0),
-            border: Border.all(color: Colors.redAccent.shade700, width: 2),
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.black54,
-                blurRadius: 12,
-                offset: Offset(0, 6),
-              ),
-            ],
+            color: const Color(0xFF262138),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: Colors.white12),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.dangerous, size: 64, color: Colors.redAccent),
+              const Icon(
+                Icons.mood_bad,
+                size: 46,
+                color: Color(0xFFE8845A),
+              ),
               const SizedBox(height: 12),
               const Text(
-                '¡PERDISTE!',
+                'Perdiste',
                 style: TextStyle(
-                  color: Colors.redAccent,
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.5,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Puntaje Final: ${estadoJuego.score}',
-                style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 18,
+                  fontSize: 24,
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              const SizedBox(height: 8),
-              Text(
-                'Diamantes Recolectados: ${estadoJuego.diamonds}',
-                style: const TextStyle(
-                  color: Colors.cyanAccent,
-                  fontSize: 14,
-                ),
-              ),
               const SizedBox(height: 16),
+              _fila('Puntaje', '${estadoJuego.score}'),
+              const SizedBox(height: 8),
+              _fila('Diamantes', '${estadoJuego.diamonds}'),
+              const SizedBox(height: 18),
               const Text(
-                'Presiona "Reiniciar" en la botonera inferior para volver a jugar.',
+                'Toca «Reiniciar» para volver a intentarlo.',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white60,
-                  fontSize: 12,
-                ),
+                style: TextStyle(color: Colors.white60, fontSize: 12),
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _fila(String etiqueta, String valor) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          etiqueta,
+          style: const TextStyle(color: Colors.white70, fontSize: 14),
+        ),
+        Text(
+          valor,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
     );
   }
 }

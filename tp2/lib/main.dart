@@ -30,7 +30,7 @@ class SurvivorApp extends StatelessWidget {
     final estado = context.watch<EstadoJuego>();
 
     return MaterialApp(
-      title: 'Supervivencia Mágica',
+      title: 'Mage Survival',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: estado.modoOscuro ? Brightness.dark : Brightness.light,
