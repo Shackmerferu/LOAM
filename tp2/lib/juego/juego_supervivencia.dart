@@ -1,8 +1,12 @@
 import 'dart:math';
+import 'dart:ui' as ui;
+
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
 import '../core/constantes.dart';
 import '../estado/estado_juego.dart';
 import 'armas/arco.dart';
@@ -14,33 +18,42 @@ import 'componentes/jugador.dart';
 import 'componentes/mascara_oscuridad.dart';
 import 'componentes/trader.dart';
 
-class FondoCuadricula extends Component {
-  final Paint _paintLinea = Paint()
-    ..color = const Color(0xFF26203D)
-    ..strokeWidth = 1.0
-    ..style = PaintingStyle.stroke;
-
-  static const double tamanoCelda = 64.0;
+class FondoGameplay extends Component
+    with HasGameReference<JuegoSupervivencia> {
   static const double tamanoMundo = 3000.0;
+  static const String _rutaImagen =
+      'assets/Fondos/DFG_Free_Sampler_Preview_Ritual_Dark_Magic_1200.jpg';
+
+  late final ui.Image _imagen;
+
+  @override
+  Future<void> onLoad() async {
+    await super.onLoad();
+    final datos = await rootBundle.load(_rutaImagen);
+    final codec = await ui.instantiateImageCodec(datos.buffer.asUint8List());
+    _imagen = (await codec.getNextFrame()).image;
+    codec.dispose();
+  }
 
   @override
   void render(Canvas canvas) {
     super.render(canvas);
-    canvas.drawRect(
-      const Rect.fromLTWH(-tamanoMundo / 2, -tamanoMundo / 2, tamanoMundo, tamanoMundo),
-      Paint()..color = const Color(0xFF131022),
+    canvas.drawImageRect(
+      _imagen,
+      Rect.fromLTWH(0, 0, _imagen.width.toDouble(), _imagen.height.toDouble()),
+      const Rect.fromLTWH(
+        -tamanoMundo / 2,
+        -tamanoMundo / 2,
+        tamanoMundo,
+        tamanoMundo,
+      ),
+      Paint()..filterQuality = ui.FilterQuality.high,
     );
-
-    for (double x = -tamanoMundo / 2; x <= tamanoMundo / 2; x += tamanoCelda) {
-      canvas.drawLine(Offset(x, -tamanoMundo / 2), Offset(x, tamanoMundo / 2), _paintLinea);
-    }
-    for (double y = -tamanoMundo / 2; y <= tamanoMundo / 2; y += tamanoCelda) {
-      canvas.drawLine(Offset(-tamanoMundo / 2, y), Offset(tamanoMundo / 2, y), _paintLinea);
-    }
   }
 }
 
-class JuegoSupervivencia extends FlameGame with HasCollisionDetection, DragCallbacks {
+class JuegoSupervivencia extends FlameGame
+    with HasCollisionDetection, DragCallbacks {
   final EstadoJuego estadoJuego;
   late final Jugador jugador;
 
@@ -93,12 +106,14 @@ class JuegoSupervivencia extends FlameGame with HasCollisionDetection, DragCallb
     ]);
     debugPrint('[DEBUG_JUEGO] Imágenes precarizadas con éxito');
 
-    await world.add(FondoCuadricula());
+    await world.add(FondoGameplay());
     await world.add(MascaraOscuridad());
 
     jugador = Jugador(estadoJuego: estadoJuego);
     await world.add(jugador);
-    debugPrint('[DEBUG_JUEGO] Jugador añadido al mundo en posición: ${jugador.position}');
+    debugPrint(
+      '[DEBUG_JUEGO] Jugador añadido al mundo en posición: ${jugador.position}',
+    );
 
     estadoJuego.asignarArmaInicialAleatoria();
     _inicializarArmaActual();
@@ -116,11 +131,13 @@ class JuegoSupervivencia extends FlameGame with HasCollisionDetection, DragCallb
       const double distancia = 380.0;
       final spawn = Vector2(cos(angulo) * distancia, sin(angulo) * distancia);
 
-      world.add(Enemigo(
-        tipo: TipoMonstruo.limo,
-        estadoJuego: estadoJuego,
-        posicionInicial: spawn,
-      ));
+      world.add(
+        Enemigo(
+          tipo: TipoMonstruo.limo,
+          estadoJuego: estadoJuego,
+          posicionInicial: spawn,
+        ),
+      );
     }
   }
 
@@ -137,7 +154,9 @@ class JuegoSupervivencia extends FlameGame with HasCollisionDetection, DragCallb
   @override
   void onDragUpdate(DragUpdateEvent event) {
     super.onDragUpdate(event);
-    if (estadoJuego.enJuego && !estadoJuego.enPausa && !estadoJuego.finPartida) {
+    if (estadoJuego.enJuego &&
+        !estadoJuego.enPausa &&
+        !estadoJuego.finPartida) {
       if (_estaArrastrando) {
         _vectorDrag += event.localDelta;
         if (_vectorDrag.length > 2.0) {
@@ -166,15 +185,18 @@ class JuegoSupervivencia extends FlameGame with HasCollisionDetection, DragCallb
   @override
   void update(double dt) {
     super.update(dt);
-    if (!estadoJuego.enJuego || estadoJuego.enPausa || estadoJuego.finPartida) return;
+    if (!estadoJuego.enJuego || estadoJuego.enPausa || estadoJuego.finPartida)
+      return;
 
-    if (estadoJuego.swordLevel > 0 && world.children.whereType<Espada>().isEmpty) {
+    if (estadoJuego.swordLevel > 0 &&
+        world.children.whereType<Espada>().isEmpty) {
       world.add(Espada(estadoJuego: estadoJuego));
     }
     if (estadoJuego.bowLevel > 0 && world.children.whereType<Arco>().isEmpty) {
       world.add(Arco(estadoJuego: estadoJuego));
     }
-    if (estadoJuego.fireMagicLevel > 0 && world.children.whereType<MagiaFuego>().isEmpty) {
+    if (estadoJuego.fireMagicLevel > 0 &&
+        world.children.whereType<MagiaFuego>().isEmpty) {
       world.add(MagiaFuego(estadoJuego: estadoJuego));
     }
 
@@ -183,7 +205,9 @@ class JuegoSupervivencia extends FlameGame with HasCollisionDetection, DragCallb
     if (estadoJuego.esHordaActiva && !_centroArenaFijado) {
       _centroArenaFijado = true;
       centroArena = jugador.position.clone();
-      debugPrint('[DEBUG_JUEGO] Horda iniciada - arena centrada en $centroArena');
+      debugPrint(
+        '[DEBUG_JUEGO] Horda iniciada - arena centrada en $centroArena',
+      );
     }
 
     if (estadoJuego.tiempoPartida >= GameConstants.tiempoTiendaMinuto5 &&
@@ -200,14 +224,22 @@ class JuegoSupervivencia extends FlameGame with HasCollisionDetection, DragCallb
   }
 
   void _regularHorda() {
-    final cantidadActual = world.children.whereType<Enemigo>().where((e) => e.current != EstadoEnemigo.muriendo).length;
+    final cantidadActual = world.children
+        .whereType<Enemigo>()
+        .where((e) => e.current != EstadoEnemigo.muriendo)
+        .length;
     if (cantidadActual >= GameConstants.maxEnemigos) return;
 
     final faltantes = GameConstants.minEnemigos - cantidadActual;
     final porGenerar = faltantes > 0 ? faltantes.clamp(1, 3) : 1;
 
     for (int i = 0; i < porGenerar; i++) {
-      if (world.children.whereType<Enemigo>().where((e) => e.current != EstadoEnemigo.muriendo).length >= GameConstants.maxEnemigos) break;
+      if (world.children
+              .whereType<Enemigo>()
+              .where((e) => e.current != EstadoEnemigo.muriendo)
+              .length >=
+          GameConstants.maxEnemigos)
+        break;
 
       final angulo = _random.nextDouble() * 2 * pi;
       const double distancia = 400.0;
@@ -224,16 +256,17 @@ class JuegoSupervivencia extends FlameGame with HasCollisionDetection, DragCallb
         tipo = TipoMonstruo.esqueleto;
       }
 
-      world.add(Enemigo(
-        tipo: tipo,
-        estadoJuego: estadoJuego,
-        posicionInicial: spawn,
-      ));
+      world.add(
+        Enemigo(tipo: tipo, estadoJuego: estadoJuego, posicionInicial: spawn),
+      );
     }
   }
 
   void respawnEnemigoTrasMuerte() {
-    final cantidadActual = world.children.whereType<Enemigo>().where((e) => e.current != EstadoEnemigo.muriendo).length;
+    final cantidadActual = world.children
+        .whereType<Enemigo>()
+        .where((e) => e.current != EstadoEnemigo.muriendo)
+        .length;
     if (cantidadActual >= GameConstants.maxEnemigos) return;
 
     final angulo = _random.nextDouble() * 2 * pi;
@@ -253,21 +286,14 @@ class JuegoSupervivencia extends FlameGame with HasCollisionDetection, DragCallb
       tipo = TipoMonstruo.miniGolem;
     }
 
-    world.add(Enemigo(
-      tipo: tipo,
-      estadoJuego: estadoJuego,
-      posicionInicial: spawn,
-    ));
+    world.add(
+      Enemigo(tipo: tipo, estadoJuego: estadoJuego, posicionInicial: spawn),
+    );
   }
 
   void _spawnComerciante() {
     final posicion = jugador.position + Vector2(140, 90);
-    world.add(
-      Trader(
-        estadoJuego: estadoJuego,
-        posicionInicial: posicion,
-      ),
-    );
+    world.add(Trader(estadoJuego: estadoJuego, posicionInicial: posicion));
     debugPrint('[DEBUG_JUEGO] Comerciante spawneado en el minuto 5');
   }
 
@@ -310,11 +336,21 @@ class JuegoSupervivencia extends FlameGame with HasCollisionDetection, DragCallb
     world.children.whereType<MagiaFuego>().forEach((e) => e.removeFromParent());
     world.children.whereType<Trader>().forEach((e) => e.removeFromParent());
     world.children.whereType<Diamante>().forEach((e) => e.removeFromParent());
-    world.children.whereType<ProyectilFlecha>().forEach((e) => e.removeFromParent());
-    world.children.whereType<ProyectilBolaFuego>().forEach((e) => e.removeFromParent());
-    world.children.whereType<EfectoLlamaradaContinua>().forEach((e) => e.removeFromParent());
-    world.children.whereType<EfectoCorte>().forEach((e) => e.removeFromParent());
-    world.children.whereType<EfectoExplosion>().forEach((e) => e.removeFromParent());
+    world.children.whereType<ProyectilFlecha>().forEach(
+      (e) => e.removeFromParent(),
+    );
+    world.children.whereType<ProyectilBolaFuego>().forEach(
+      (e) => e.removeFromParent(),
+    );
+    world.children.whereType<EfectoLlamaradaContinua>().forEach(
+      (e) => e.removeFromParent(),
+    );
+    world.children.whereType<EfectoCorte>().forEach(
+      (e) => e.removeFromParent(),
+    );
+    world.children.whereType<EfectoExplosion>().forEach(
+      (e) => e.removeFromParent(),
+    );
     centroArena = Vector2.zero();
     _centroArenaFijado = false;
     estadoJuego.reiniciarPartida();

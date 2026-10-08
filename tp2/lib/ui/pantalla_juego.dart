@@ -1,6 +1,7 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../core/constantes.dart';
 import '../estado/estado_juego.dart';
 import '../juego/juego_supervivencia.dart';
@@ -45,7 +46,9 @@ class _PantallaJuegoState extends State<PantallaJuego> {
     }
 
     return Scaffold(
-      backgroundColor: estado.modoOscuro ? GameConstants.fondoOscuro : GameConstants.fondoClaro,
+      backgroundColor: estado.modoOscuro
+          ? GameConstants.fondoOscuro
+          : GameConstants.fondoClaro,
       body: SafeArea(
         // El header se ancla al borde superior real del teléfono y su fondo
         // cubre la franja de la status bar.
@@ -91,7 +94,9 @@ class _PantallaJuegoState extends State<PantallaJuego> {
   }
 
   Widget _construirBotoneraExterna(EstadoJuego estado) {
-    final colorFondo = estado.modoOscuro ? GameConstants.superficieOscura : GameConstants.superficieClara;
+    final colorFondo = estado.modoOscuro
+        ? GameConstants.superficieOscura
+        : GameConstants.superficieClara;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -105,19 +110,21 @@ class _PantallaJuegoState extends State<PantallaJuego> {
             onPressed: !estado.enJuego
                 ? null
                 : () {
-              if (estado.enPausa) {
-                debugPrint('[DEBUG_UI] Botón Reanudar presionado');
-                estado.reanudarPartida();
-              } else {
-                debugPrint('[DEBUG_UI] Botón Pausar presionado');
-                estado.pausarPartida();
-              }
-            },
+                    if (estado.enPausa) {
+                      debugPrint('[DEBUG_UI] Botón Reanudar presionado');
+                      estado.reanudarPartida();
+                    } else {
+                      debugPrint('[DEBUG_UI] Botón Pausar presionado');
+                      estado.pausarPartida();
+                    }
+                  },
           ),
           ElevatedButton.icon(
             icon: const Icon(Icons.refresh),
             label: const Text('Reiniciar'),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent.shade700),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.redAccent.shade700,
+            ),
             onPressed: () {
               debugPrint('[DEBUG_UI] Botón Reiniciar presionado');
               _juego.overlays.clear();

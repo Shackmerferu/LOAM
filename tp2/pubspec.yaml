@@ -60,6 +60,7 @@ flutter:
     - assets/images/monstruos/
     - assets/images/armas/
     - assets/images/items/
+    - assets/Fondos/
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
