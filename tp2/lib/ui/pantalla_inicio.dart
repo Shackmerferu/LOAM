@@ -52,7 +52,7 @@ class PantallaInicio extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   const Text(
-                    'Supervivencia Mágica',
+                    'Mage Survival',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.white,
