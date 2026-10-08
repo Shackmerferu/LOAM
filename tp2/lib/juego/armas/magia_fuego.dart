@@ -172,12 +172,18 @@ class ProyectilBolaFuego extends SpriteAnimationComponent
   }
 }
 
-enum EstadoLlamarada { encendiendo, sostenido }
+enum EstadoLlamarada { encendiendo, sostenido, apagando }
 
 class EfectoLlamaradaContinua
     extends SpriteAnimationGroupComponent<EstadoLlamarada>
     with HasGameReference<JuegoSupervivencia> {
   final double danioBaseSegundo;
+
+  /// armas/llamarada.png mide 10240x256: 20 frames de 512x256.
+  /// Los 18 primeros (0..17) dibujan la llamarada; los 2 últimos están vacíos.
+  static const int tilesTotales = 18;
+  static const int tileSostenidoInicio = 7;
+  static const int tileApagandoInicio = 11;
 
   static const double duracionTotal = 5.0;
   static const double alcanceLlama = 150.0;
@@ -190,11 +196,13 @@ class EfectoLlamaradaContinua
     required this.danioBaseSegundo,
   }) : super(
     position: posicionOrigen,
-    size: Vector2(170.0, 191.0),
-    // Ancla en la base (borde izquierdo) para que la llamarada empiece
-    // exactamente en el origen y no a la mitad del sprite.
-    anchor: const Anchor(0.0, 0.4),
+    // Frames de 512x256 (2:1), escalados sin deformar.
+    size: Vector2(224.0, 112.0),
+    // Base de la llama (x = 90/512 del tile) y su centro vertical (y = 102/256),
+    // para que arranque justo en el borde del jugador.
+    anchor: const Anchor(0.17, 0.4),
     priority: 5,
+    removeOnFinish: const {EstadoLlamarada.apagando: true},
   );
 
   @override
@@ -203,23 +211,33 @@ class EfectoLlamaradaContinua
 
     final hoja = SpriteSheet(
       image: game.images.fromCache('armas/llamarada.png'),
-      srcSize: Vector2(80, 90),
+      srcSize: Vector2(512, 256),
     );
 
     animations = {
+      // Tiles 0..6: la llama se enciende desde su base.
       EstadoLlamarada.encendiendo: hoja.createAnimation(
         row: 0,
         stepTime: 0.08,
         from: 0,
-        to: 5,
+        to: tileSostenidoInicio,
         loop: false,
       ),
+      // Tiles 7..10: llama a plena potencia, en bucle mientras dure el efecto.
       EstadoLlamarada.sostenido: hoja.createAnimation(
         row: 0,
         stepTime: 0.15,
-        from: 5,
-        to: 8,
+        from: tileSostenidoInicio,
+        to: tileApagandoInicio,
         loop: true,
+      ),
+      // Tiles 11..17: la llama se apaga (completan los 18 tiles).
+      EstadoLlamarada.apagando: hoja.createAnimation(
+        row: 0,
+        stepTime: 0.08,
+        from: tileApagandoInicio,
+        to: tilesTotales,
+        loop: false,
       ),
     };
 
@@ -238,18 +256,21 @@ class EfectoLlamaradaContinua
     super.update(dt);
 
     _tiempoActivo += dt;
-    if (_tiempoActivo >= duracionTotal) {
-      removeFromParent();
-      return;
-    }
 
-    if (current == EstadoLlamarada.encendiendo &&
+    if (current != EstadoLlamarada.apagando &&
+        _tiempoActivo >= duracionTotal) {
+      // Se acabó el tiempo del efecto: la llama se extingue (sin daño).
+      current = EstadoLlamarada.apagando;
+    } else if (current == EstadoLlamarada.encendiendo &&
         (animationTicker?.done() ?? false)) {
       current = EstadoLlamarada.sostenido;
     }
 
     _actualizarTransforme();
-    _aplicarDanio(dt);
+
+    if (current != EstadoLlamarada.apagando) {
+      _aplicarDanio(dt);
+    }
   }
 
   void _actualizarTransforme() {

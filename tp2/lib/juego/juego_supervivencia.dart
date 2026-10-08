@@ -83,8 +83,6 @@ class JuegoSupervivencia extends FlameGame with HasCollisionDetection, DragCallb
       'personajes/trader_comerciar.png',
       'armas/espada_corte.png',
       'armas/corte_dimensional.png',
-      'armas/arco.png',
-      'armas/ballesta.png',
       'armas/flecha.png',
       'armas/flecha_explosiva.png',
       'armas/explosion.png',
