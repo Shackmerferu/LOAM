@@ -6,7 +6,7 @@ import '../../core/constantes.dart';
 import '../../estado/estado_juego.dart';
 import '../juego_supervivencia.dart';
 
-enum EstadoJugador { quieto, caminando, danio, muerte, subirNivel }
+enum EstadoJugador { quieto, caminando, danio, muerte }
 
 class Jugador extends SpriteAnimationGroupComponent<EstadoJugador>
     with HasGameReference<JuegoSupervivencia>, CollisionCallbacks {
@@ -51,11 +51,10 @@ class Jugador extends SpriteAnimationGroupComponent<EstadoJugador>
     debugPrint('[DEBUG_JUGADOR] onLoad() iniciado, posición inicial: $position');
 
     animations = {
-      EstadoJugador.quieto: await _cargarAnimacion('personajes/jugador_quieto.png', 6, 0.2),
-      EstadoJugador.caminando: await _cargarAnimacion('personajes/jugador_caminar.png', 12, 0.08),
-      EstadoJugador.danio: await _cargarAnimacion('personajes/jugador_herido.png', 3, 0.08),
-      EstadoJugador.muerte: await _cargarAnimacion('personajes/jugador_muerte.png', 5, 0.1),
-      EstadoJugador.subirNivel: await _cargarAnimacion('personajes/jugador_levelup.png', 7, 0.1),
+      EstadoJugador.quieto: await _cargarAnimacion('personajes/Idle.png', 8, 0.2),
+      EstadoJugador.caminando: await _cargarAnimacion('personajes/Walk.png', 7, 0.12),
+      EstadoJugador.danio: await _cargarAnimacion('personajes/Hurt.png', 4, 0.08),
+      EstadoJugador.muerte: await _cargarAnimacion('personajes/Dead.png', 4, 0.1),
     };
 
     current = EstadoJugador.quieto;
@@ -93,8 +92,11 @@ class Jugador extends SpriteAnimationGroupComponent<EstadoJugador>
       _inmunidadRestante -= dt;
     }
 
-    if (current == EstadoJugador.danio || current == EstadoJugador.subirNivel) {
-      if (animationTicker?.done() ?? false) {
+    // La animación de darío es en bucle (loop: true); se mantiene solo
+    // 2 ciclos completos (2 x duración del sprite) y vuelve a quieto.
+    if (current == EstadoJugador.danio) {
+      final ticker = animationTicker;
+      if (ticker != null && ticker.elapsed >= 2 * ticker.totalDuration()) {
         current = EstadoJugador.quieto;
       }
     }
@@ -171,16 +173,31 @@ class Jugador extends SpriteAnimationGroupComponent<EstadoJugador>
     }
   }
 
-  void animarSubidaNivel() {
-    if (_estaMuerto) return;
-    current = EstadoJugador.subirNivel;
-    animationTicker?.reset();
-  }
-
   void _morir() {
     _estaMuerto = true;
+    // Sin inmunidad pendiente: si quedara > 0 el parpadeo quedaría congelado
+    // (update no corre con finPartida) y el cadáver no se vería.
+    _inmunidadRestante = 0.0;
     current = EstadoJugador.muerte;
     animationTicker?.reset();
     children.whereType<CircleHitbox>().forEach((h) => h.removeFromParent());
+  }
+
+  /// Restaura al jugador tras un reinicio de partida: revuelve a vivo,
+  /// repone el hitbox que se elimina al morir y resetea animación/estado.
+  void reiniciar() {
+    _estaMuerto = false;
+    _inmunidadRestante = 0.0;
+    direccionMovimiento = Vector2.zero();
+    ultimaDireccion = Vector2(1, 0);
+    scale.setValues(1, 1);
+    position = game.size.isZero() ? Vector2(200, 400) : game.size / 2;
+
+    if (children.whereType<CircleHitbox>().isEmpty) {
+      add(CircleHitbox(radius: radioHitbox, anchor: Anchor.center, position: size / 2));
+    }
+
+    current = EstadoJugador.quieto;
+    animationTicker?.reset();
   }
 }

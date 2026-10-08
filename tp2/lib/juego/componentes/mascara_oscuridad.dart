@@ -4,7 +4,7 @@ import '../../core/constantes.dart';
 import '../juego_supervivencia.dart';
 
 /// Cubre con negro puro todo lo que queda fuera de la arena restringida
-/// durante la horda del minuto 6, dejando visible unicamente el cuadrado
+/// cuando se cierra el círculo (3:30), dejando visible unicamente el cuadrado
 /// central donde se desarrolla el combate.
 class MascaraOscuridad extends Component with HasGameReference<JuegoSupervivencia> {
   static const double _alcanceMundo = 3000.0;

@@ -83,33 +83,31 @@ class DialogoTienda extends StatelessWidget {
         border: Border.all(color: Colors.amberAccent),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            children: [
-              const Icon(Icons.workspace_premium, color: Colors.amberAccent, size: 24),
-              const SizedBox(width: 10),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Cuenta PRO',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
+          const Icon(Icons.workspace_premium, color: Colors.amberAccent, size: 24),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Cuenta PRO',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
                   ),
-                  Text(
-                    yaEsPro
-                        ? 'Ya tienes los beneficios exclusivos'
-                        : 'Gana beneficios exclusivos',
-                    style: const TextStyle(color: Colors.white60, fontSize: 11),
-                  ),
-                ],
-              ),
-            ],
+                ),
+                Text(
+                  yaEsPro
+                      ? 'Ya tienes los beneficios exclusivos'
+                      : 'Gana beneficios exclusivos',
+                  style: const TextStyle(color: Colors.white60, fontSize: 11),
+                ),
+              ],
+            ),
           ),
+          const SizedBox(width: 8),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.amber.shade700,
@@ -138,31 +136,29 @@ class DialogoTienda extends StatelessWidget {
         border: Border.all(color: Colors.redAccent),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            children: [
-              const Icon(Icons.favorite, color: Colors.redAccent, size: 24),
-              const SizedBox(width: 10),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    '1 Vida Extra',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
+          const Icon(Icons.favorite, color: Colors.redAccent, size: 24),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  '1 Vida Extra',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
                   ),
-                  Text(
-                    'Vidas extra: ${estadoJuego.vidasExtras}',
-                    style: const TextStyle(color: Colors.white60, fontSize: 11),
-                  ),
-                ],
-              ),
-            ],
+                ),
+                Text(
+                  'Vidas extra: ${estadoJuego.vidasExtras}',
+                  style: const TextStyle(color: Colors.white60, fontSize: 11),
+                ),
+              ],
+            ),
           ),
+          const SizedBox(width: 8),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.redAccent.shade700,
@@ -197,22 +193,20 @@ class DialogoTienda extends StatelessWidget {
         ),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            children: [
-              Icon(icono, color: Colors.cyanAccent, size: 24),
-              const SizedBox(width: 10),
-              Text(
-                '$diamantes Diamantes',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                ),
+          Icon(icono, color: Colors.cyanAccent, size: 24),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              '$diamantes Diamantes',
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
               ),
-            ],
+            ),
           ),
+          const SizedBox(width: 8),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: destacado ? Colors.cyanAccent : Colors.blueGrey.shade700,

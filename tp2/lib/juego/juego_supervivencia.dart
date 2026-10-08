@@ -44,7 +44,7 @@ class JuegoSupervivencia extends FlameGame with HasCollisionDetection, DragCallb
   final EstadoJuego estadoJuego;
   late final Jugador jugador;
 
-  /// Centro de la arena restringida; se fija al iniciar la horda del minuto 6.
+  /// Centro de la arena restringida; se fija al cerrarse el círculo (3:30).
   Vector2 centroArena = Vector2.zero();
   bool _centroArenaFijado = false;
 
@@ -64,11 +64,10 @@ class JuegoSupervivencia extends FlameGame with HasCollisionDetection, DragCallb
     debugPrint('[DEBUG_JUEGO] onLoad() iniciado - Precaricando imágenes...');
 
     await images.loadAll([
-      'personajes/jugador_quieto.png',
-      'personajes/jugador_caminar.png',
-      'personajes/jugador_herido.png',
-      'personajes/jugador_muerte.png',
-      'personajes/jugador_levelup.png',
+      'personajes/Idle.png',
+      'personajes/Walk.png',
+      'personajes/Hurt.png',
+      'personajes/Dead.png',
       'monstruos/limo_caminar.png',
       'monstruos/limo_muerte.png',
       'monstruos/lobo_caminar.png',
@@ -184,9 +183,9 @@ class JuegoSupervivencia extends FlameGame with HasCollisionDetection, DragCallb
       debugPrint('[DEBUG_JUEGO] Horda iniciada - arena centrada en $centroArena');
     }
 
-    if (estadoJuego.tiempoPartida >= GameConstants.tiempoTiendaMinuto5 &&
-        !estadoJuego.tiendaMinuto5Mostrada) {
-      estadoJuego.tiendaMinuto5Mostrada = true;
+    if (estadoJuego.tiempoPartida >= GameConstants.tiempoSpawnTrader &&
+        !estadoJuego.tiendaMostrada) {
+      estadoJuego.tiendaMostrada = true;
       _spawnComerciante();
     }
 
@@ -266,7 +265,7 @@ class JuegoSupervivencia extends FlameGame with HasCollisionDetection, DragCallb
         posicionInicial: posicion,
       ),
     );
-    debugPrint('[DEBUG_JUEGO] Comerciante spawneado en el minuto 5');
+    debugPrint('[DEBUG_JUEGO] Comerciante spawneado en el minuto 3');
   }
 
   void eliminarComerciante() {
@@ -275,7 +274,6 @@ class JuegoSupervivencia extends FlameGame with HasCollisionDetection, DragCallb
   }
 
   void activarSubidaNivel() {
-    jugador.animarSubidaNivel();
     pausarPorOverlay('ModalSubirNivel');
   }
 
@@ -316,6 +314,7 @@ class JuegoSupervivencia extends FlameGame with HasCollisionDetection, DragCallb
     centroArena = Vector2.zero();
     _centroArenaFijado = false;
     estadoJuego.reiniciarPartida();
+    jugador.reiniciar();
     _inicializarArmaActual();
     _spawnOleadaInicial();
   }

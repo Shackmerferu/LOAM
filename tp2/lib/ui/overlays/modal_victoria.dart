@@ -48,7 +48,7 @@ class ModalVictoria extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               const Text(
-                'Sobreviviste los 10 minutos completos.',
+                'Sobreviviste los 5 minutos completos.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.white70,

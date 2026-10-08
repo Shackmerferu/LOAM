@@ -65,7 +65,7 @@ class EstadoJuego extends ChangeNotifier {
   bool victoria = false;
   bool get isVictory => victoria;
 
-  bool tiendaMinuto5Mostrada = false;
+  bool tiendaMostrada = false;
 
   void iniciarPartida() {
     debugPrint('[DEBUG_ESTADO] iniciarPartida() llamado');
@@ -73,7 +73,7 @@ class EstadoJuego extends ChangeNotifier {
     enPausa = false;
     finPartida = false;
     victoria = false;
-    tiendaMinuto5Mostrada = false;
+    tiendaMostrada = false;
     notificarSeguro();
   }
   void startGame() => iniciarPartida();
@@ -126,7 +126,7 @@ class EstadoJuego extends ChangeNotifier {
     mejorasDanioCompradas = 0;
     mejorasVelocidadCompradas = 0;
     mejorasSaludCompradas = 0;
-    tiendaMinuto5Mostrada = false;
+    tiendaMostrada = false;
     finPartida = false;
     iniciarPartida();
   }
@@ -140,7 +140,7 @@ class EstadoJuego extends ChangeNotifier {
   }
 
   void ganarPartida() {
-    debugPrint('[DEBUG_ESTADO] ganarPartida() llamado - 10 minutos completados');
+    debugPrint('[DEBUG_ESTADO] ganarPartida() llamado - 5 minutos completados');
     enJuego = false;
     enPausa = false;
     finPartida = false;
@@ -251,9 +251,9 @@ class EstadoJuego extends ChangeNotifier {
 
   final Random _random = Random();
 
-  bool get esHordaActiva => tiempoPartida >= GameConstants.tiempoHordaMinuto6;
+  bool get esHordaActiva => tiempoPartida >= GameConstants.tiempoInicioHorda;
   double get multiplicadorEnemigo => esHordaActiva
-      ? GameConstants.multiplicadorHordaMinuto6
+      ? GameConstants.multiplicadorHorda
       : (1.0 + (tiempoPartida / 450.0));
 
   void actualizarTiempo(double dt) {

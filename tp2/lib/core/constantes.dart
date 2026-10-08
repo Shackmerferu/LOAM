@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 
 class GameConstants {
   // Tiempos (segundos)
-  static const double duracionMaximaPartida = 600.0;
-  static const double tiempoTiendaMinuto5 = 300.0;
-  static const double tiempoHordaMinuto6 = 360.0;
+  static const double duracionMaximaPartida = 300.0; // Victoria a los 5:00
+  static const double tiempoSpawnTrader = 180.0; // Comerciante a los 3:00
+  static const double tiempoInicioHorda = 210.0; // Círculo cerrado a los 3:30
 
   // Horda y área
   static const int minEnemigos = 10;
   static const int maxEnemigos = 15;
-  static const double multiplicadorHordaMinuto6 = 2.5;
+  static const double multiplicadorHorda = 2.5;
   static const double tamanoAreaRestringida = 432.0;
 
   // Progresión y armas

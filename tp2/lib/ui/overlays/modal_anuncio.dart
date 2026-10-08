@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:video_player/video_player.dart';
 import '../../estado/estado_juego.dart';
 import '../../juego/juego_supervivencia.dart';
 
@@ -18,13 +19,35 @@ class ModalAnuncio extends StatefulWidget {
 }
 
 class _ModalAnuncioState extends State<ModalAnuncio> {
+  static const String rutaVideo = 'assets/anuncios/redragon.mp4';
+
   int _segundosRestantes = 5;
   Timer? _temporizador;
+  VideoPlayerController? _controladorVideo;
+  bool _videoListo = false;
+  bool _videoError = false;
 
   @override
   void initState() {
     super.initState();
+    _cargarVideo();
     _iniciarCuentaRegresiva();
+  }
+
+  Future<void> _cargarVideo() async {
+    final controlador = VideoPlayerController.asset(rutaVideo);
+    _controladorVideo = controlador;
+    try {
+      await controlador.initialize();
+      await controlador.setLooping(true);
+      await controlador.setVolume(0.0);
+      await controlador.play();
+      if (!mounted) return;
+      setState(() => _videoListo = true);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _videoError = true);
+    }
   }
 
   void _iniciarCuentaRegresiva() {
@@ -45,13 +68,50 @@ class _ModalAnuncioState extends State<ModalAnuncio> {
   @override
   void dispose() {
     _temporizador?.cancel();
+    final controlador = _controladorVideo;
+    _controladorVideo = null;
+    controlador?.dispose();
     super.dispose();
   }
 
-  void _cerrarYReiniciar() {
+  void _cerrar() {
     widget.juego.overlays.remove('ModalAnuncio');
-    widget.juego.reiniciar();
-    widget.estadoJuego.resetGame();
+    if (widget.estadoJuego.finPartida) {
+      // Murió el usuario: tras el anuncio va la pantalla de derrota.
+      widget.juego.overlays.add('GameOver');
+    } else {
+      widget.juego.reiniciar();
+      widget.estadoJuego.resetGame();
+    }
+  }
+
+  Widget _construirVideo() {
+    if (_videoListo && _controladorVideo != null) {
+      return Center(
+        child: AspectRatio(
+          aspectRatio: _controladorVideo!.value.aspectRatio,
+          child: VideoPlayer(_controladorVideo!),
+        ),
+      );
+    }
+
+    if (_videoError) {
+      return const Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.videocam_off, size: 40, color: Colors.white38),
+          SizedBox(height: 8),
+          Text(
+            'No se pudo reproducir el anuncio',
+            style: TextStyle(color: Colors.white54, fontSize: 12),
+          ),
+        ],
+      );
+    }
+
+    return const Center(
+      child: CircularProgressIndicator(color: Colors.cyanAccent),
+    );
   }
 
   @override
@@ -96,33 +156,15 @@ class _ModalAnuncioState extends State<ModalAnuncio> {
               ),
               const SizedBox(height: 20),
               Container(
-                height: 140,
+                height: 150,
                 width: double.infinity,
+                clipBehavior: Clip.antiAlias,
                 decoration: BoxDecoration(
                   color: const Color(0xFF151520),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: Colors.white10),
                 ),
-                child: const Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.videogame_asset, size: 48, color: Colors.cyanAccent),
-                    SizedBox(height: 8),
-                    Text(
-                      'Anuncio Simulado',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                    SizedBox(height: 4),
-                    Text(
-                      'Reanudación tras reinicio',
-                      style: TextStyle(color: Colors.white54, fontSize: 12),
-                    ),
-                  ],
-                ),
+                child: _construirVideo(),
               ),
               const SizedBox(height: 20),
               SizedBox(
@@ -134,8 +176,8 @@ class _ModalAnuncioState extends State<ModalAnuncio> {
                         : Colors.grey.shade700,
                     foregroundColor: Colors.white,
                   ),
-                  onPressed: _segundosRestantes == 0 ? _cerrarYReiniciar : null,
-                  child: Text(_segundosRestantes == 0 ? 'CERRAR Y REINICIAR' : 'ESPERE...'),
+                  onPressed: _segundosRestantes == 0 ? _cerrar : null,
+                  child: Text(_segundosRestantes == 0 ? 'CERRAR ANUNCIO' : 'ESPERE...'),
                 ),
               ),
             ],

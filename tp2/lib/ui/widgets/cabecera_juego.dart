@@ -43,40 +43,44 @@ class CabeceraJuego extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        Icon(Icons.person, size: 20, color: isDark ? Colors.white70 : Colors.black87),
-                        const SizedBox(width: 6),
-                        Text(
-                          estadoJuego.username,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: isDark ? Colors.white : Colors.black87,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        // Etiqueta solo-lectura: pasa a PRO con la compra
-                        // simulada de la tienda (vuelve a BASIC al reiniciar).
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: estadoJuego.accountType == AccountType.pro
-                                ? Colors.amber.shade700
-                                : Colors.grey.shade600,
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Text(
-                            estadoJuego.accountType == AccountType.pro ? 'PRO' : 'BASIC',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Icon(Icons.person, size: 20, color: isDark ? Colors.white70 : Colors.black87),
+                          const SizedBox(width: 6),
+                          Flexible(
+                            child: Text(
+                              estadoJuego.username,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: isDark ? Colors.white : Colors.black87,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 8),
+                          // Etiqueta solo-lectura: pasa a PRO con la compra
+                          // simulada de la tienda (vuelve a BASIC al reiniciar).
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: estadoJuego.accountType == AccountType.pro
+                                  ? Colors.amber.shade700
+                                  : Colors.grey.shade600,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              estadoJuego.accountType == AccountType.pro ? 'PRO' : 'BASIC',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                     IconButton(
                       icon: Icon(

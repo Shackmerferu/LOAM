@@ -32,9 +32,12 @@ class _PantallaJuegoState extends State<PantallaJuego> {
   Widget build(BuildContext context) {
     final estado = context.watch<EstadoJuego>();
 
-    if (estado.finPartida && !_juego.overlays.isActive('GameOver')) {
+    // Al morir: primero el anuncio (con video) y al cerrarlo el GameOver.
+    if (estado.finPartida &&
+        !_juego.overlays.isActive('ModalAnuncio') &&
+        !_juego.overlays.isActive('GameOver')) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        _juego.overlays.add('GameOver');
+        _juego.overlays.add('ModalAnuncio');
       });
     }
 
